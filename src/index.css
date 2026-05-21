@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
+.dark body {
+  @apply bg-slate-950 text-slate-200;
+}
+
+/* Thin custom scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+/* ----------------------------------------------------------------------- */
+/* Article body — Markdown rendering styles                                */
+/* ----------------------------------------------------------------------- */
+.article-body {
+  @apply text-[15px] leading-7 text-slate-700;
+}
+.dark .article-body {
+  @apply text-slate-300;
+}
+.article-body h1 {
+  @apply mt-0 mb-4 text-3xl font-extrabold tracking-tight text-slate-900;
+}
+.article-body h2 {
+  @apply mt-10 mb-3 scroll-mt-24 border-b border-slate-200 pb-2 text-xl font-bold text-slate-900;
+}
+.article-body h3 {
+  @apply mt-7 mb-2 scroll-mt-24 text-lg font-semibold text-slate-900;
+}
+.dark .article-body h1,
+.dark .article-body h2,
+.dark .article-body h3 {
+  @apply text-white;
+}
+.dark .article-body h2 {
+  @apply border-slate-800;
+}
+.article-body p {
+  @apply my-4;
+}
+.article-body a {
+  @apply font-medium text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900;
+}
+.dark .article-body a {
+  @apply text-teal-300 decoration-teal-700 hover:text-teal-200;
+}
+.article-body ul {
+  @apply my-4 list-disc space-y-1.5 pl-6;
+}
+.article-body ol {
+  @apply my-4 list-decimal space-y-1.5 pl-6;
+}
+.article-body li {
+  @apply pl-1;
+}
+.article-body strong {
+  @apply font-semibold text-slate-900;
+}
+.dark .article-body strong {
+  @apply text-white;
+}
+.article-body code {
+  @apply rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[13px] text-teal-800;
+}
+.dark .article-body code {
+  @apply bg-slate-800 text-teal-300;
+}
+.article-body pre {
+  @apply my-5 overflow-x-auto rounded-xl bg-slate-900 p-4 text-[13px] leading-6;
+}
+.article-body pre code {
+  @apply bg-transparent p-0 text-slate-100;
+}
+.article-body table {
+  @apply my-5 w-full border-collapse overflow-hidden rounded-lg text-sm;
+}
+.article-body th {
+  @apply border border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold text-slate-900;
+}
+.article-body td {
+  @apply border border-slate-200 px-3 py-2;
+}
+.dark .article-body th {
+  @apply border-slate-700 bg-slate-800 text-white;
+}
+.dark .article-body td {
+  @apply border-slate-700;
+}
+.article-body hr {
+  @apply my-8 border-slate-200;
+}
+.dark .article-body hr {
+  @apply border-slate-800;
+}
+.article-body svg {
+  @apply mx-auto my-6 max-w-full;
+}
+
+/* Standard blockquote */
+.article-body blockquote {
+  @apply my-5 rounded-r-lg border-l-4 border-teal-400 bg-teal-50 px-4 py-3 text-slate-700;
+}
+.dark .article-body blockquote {
+  @apply bg-teal-950/40 text-slate-300;
+}
+.article-body blockquote p {
+  @apply my-1;
+}
+
+/* Ghana callout — blockquote whose text begins with the flag emoji.
+   The MarkdownRenderer adds .ghana-callout for these. */
+.article-body blockquote.ghana-callout {
+  @apply border-ghana-400 bg-ghana-50;
+}
+.dark .article-body blockquote.ghana-callout {
+  @apply bg-ghana-900/30;
+}
+
+/* Standards purchase-link footer callout */
+.article-body blockquote.standards-footer {
+  @apply border-slate-400 bg-slate-100 text-sm;
+}
+.dark .article-body blockquote.standards-footer {
+  @apply bg-slate-800/60;
+}
+
+/* ----------------------------------------------------------------------- */
+/* Minimal highlight.js theme (rehype-highlight)                           */
+/* ----------------------------------------------------------------------- */
+.hljs-comment,
+.hljs-quote {
+  color: #94a3b8;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in {
+  color: #5eead4;
+}
+.hljs-string,
+.hljs-attr {
+  color: #fdba74;
+}
+.hljs-number,
+.hljs-literal {
+  color: #67e8f9;
+}
+.hljs-title,
+.hljs-section,
+.hljs-name {
+  color: #93c5fd;
+}
+
+/* Animations */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out;
+}

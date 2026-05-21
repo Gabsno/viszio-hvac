@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# build output
+dist
+dist-ssr
+*.local
+
+# typescript incremental build cache
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# machine-specific reference path (contains username, never commit)
+scripts/reference-path.local.txt
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# logs
+logs

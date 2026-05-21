@@ -1,0 +1,48 @@
+import { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { LibraryLayout } from './components/LibraryLayout';
+import { PlainLayout } from './components/PlainLayout';
+import { UpdateBanner } from './components/UpdateBanner';
+import { SearchOverlay } from './components/SearchOverlay';
+import { AITutorPanel } from './components/AITutorPanel';
+import { HomePage } from './pages/HomePage';
+import { LibraryPage } from './pages/LibraryPage';
+import { ArticlePage } from './pages/ArticlePage';
+import { CoursePage } from './pages/CoursePage';
+import { LessonPage } from './pages/LessonPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { LoginPage } from './pages/LoginPage';
+import { useSettingsStore } from './store/useSettingsStore';
+
+export default function App() {
+  const theme = useSettingsStore((s) => s.theme);
+
+  // Reflect the chosen theme on <html> for Tailwind's `dark:` variants.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  return (
+    <>
+      <Routes>
+        <Route element={<LibraryLayout />}>
+          <Route path="/library" element={<LibraryPage />} />
+          <Route path="/article/:id" element={<ArticlePage />} />
+        </Route>
+        <Route element={<PlainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/course" element={<CoursePage />} />
+          <Route path="/course/:lessonId" element={<LessonPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* Global overlays */}
+      <UpdateBanner />
+      <SearchOverlay />
+      <AITutorPanel />
+    </>
+  );
+}
