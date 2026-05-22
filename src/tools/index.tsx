@@ -340,6 +340,9 @@ const ACTIVITIES: {
   { value: 'heavy', label: 'Heavy work', sensible: 170, latent: 255 },
 ];
 
+// Cooling load factors (kW/m2) for the quick rule-of-thumb method.
+const LOAD_FACTORS = ['0.18', '0.2', '0.23', '0.26', '0.29', '0.32', '0.35'];
+
 function CoolingLoadCalc() {
   const fields: Record<string, FieldUnit> = {
     outdoorDB: 'temp',
@@ -353,6 +356,7 @@ function CoolingLoadCalc() {
     glassArea: 'area',
     glassU: 'uValue',
     outdoorAir: 'airflow',
+    quickFactor: null,
   };
   const { sys, vals, set } = useUnitInputs(
     {
@@ -375,12 +379,15 @@ function CoolingLoadCalc() {
       outdoorAir: '120',
       infiltrationACH: '0.5',
       safetyPct: '10',
+      quickFactor: '0.25',
     },
     fields,
   );
+  const [method, setMethod] = useState('detailed');
   const [orientation, setOrientation] = useState('west');
   const [activity, setActivity] = useState('office');
   const [roofSunlit, setRoofSunlit] = useState(true);
+  const [factorChoice, setFactorChoice] = useState('0.2');
 
   const r = useMemo(() => {
     const act = ACTIVITIES.find((a) => a.value === activity) ?? ACTIVITIES[0];
@@ -417,10 +424,77 @@ function CoolingLoadCalc() {
   const pUnit = uLabel('power', sys);
   const showP = (w: number) => fmt(toDisp(w / 1000, 'power', sys), 2);
 
+  const quickFactor =
+    factorChoice === 'custom'
+      ? num(vals.quickFactor)
+      : parseFloat(factorChoice);
+  const quickKW = toSI(num(vals.floorArea), 'area', sys) * quickFactor;
+
   return (
     <>
       <UnitToggle />
 
+      <Grid>
+        <SelectField
+          label="Calculation method"
+          value={method}
+          onChange={setMethod}
+          options={[
+            { value: 'detailed', label: 'Detailed — component method' },
+            { value: 'quick', label: 'Quick — area × load factor' },
+          ]}
+        />
+      </Grid>
+
+      {method === 'quick' ? (
+        <>
+          <SectionLabel>Quick estimate</SectionLabel>
+          <Grid>
+            <Field
+              label="Floor area"
+              value={vals.floorArea}
+              onChange={(v) => set('floorArea', v)}
+              unit={uLabel('area', sys)}
+            />
+            <SelectField
+              label="Cooling load factor"
+              value={factorChoice}
+              onChange={setFactorChoice}
+              options={[
+                ...LOAD_FACTORS.map((f) => ({
+                  value: f,
+                  label: `${f} kW/m²`,
+                })),
+                { value: 'custom', label: 'Custom value' },
+              ]}
+            />
+            {factorChoice === 'custom' && (
+              <Field
+                label="Custom load factor"
+                value={vals.quickFactor}
+                onChange={(v) => set('quickFactor', v)}
+                unit="kW/m²"
+                step={0.01}
+              />
+            )}
+          </Grid>
+          <Results
+            rows={[
+              ['Load factor used', `${fmt(quickFactor, 2)} kW/m²`],
+              [
+                'Total cooling load',
+                `${fmt(quickKW, 2)} kW  ·  ${fmt(quickKW / 3.517, 1)} tons`,
+              ],
+            ]}
+          />
+          <Note>
+            A rule-of-thumb estimate — floor area times a cooling load factor.
+            Good for early budgeting and equipment counts; use the detailed
+            method before final equipment selection.
+          </Note>
+        </>
+      ) : (
+        <>
       <SectionLabel>Design conditions</SectionLabel>
       <Grid>
         <Field
@@ -626,6 +700,8 @@ function CoolingLoadCalc() {
         and infiltration). For a final design, follow it with a room-by-room
         RTS calculation — see the Load Calculations section.
       </Note>
+        </>
+      )}
     </>
   );
 }
