@@ -37,6 +37,7 @@ export function LessonPage() {
     window.scrollTo(0, 0);
     setPhase('learn');
     setScore(0);
+    if (findLesson(lessonId)) trackEvent(`lesson-started: ${lessonId}`);
   }, [lessonId]);
 
   const articles = useMemo(
@@ -69,6 +70,7 @@ export function LessonPage() {
     setScore(scorePercent);
     completeLesson(lesson.id, scorePercent, lesson.xp);
     trackEvent(`lesson-completed: ${lesson.id}`);
+    trackEvent(`quiz-score: ${scorePercent}%`);
     for (const a of lesson.articleIds) markRead(a);
 
     // Trophy checks.
