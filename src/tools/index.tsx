@@ -7,6 +7,7 @@ import {
   ductAt,
   ductDiaForFriction,
   ductDiaForVelocity,
+  equivDiameter,
   rectSideForDia,
   nextStandardDuct,
   STEEL_SCH40,
@@ -635,12 +636,21 @@ function CoolingLoadCalc() {
 
 function DuctSizingCalc() {
   const { sys, vals, set } = useUnitInputs(
-    { flow: '500', friction: '1', velocity: '5', side: '300' },
+    {
+      flow: '500',
+      friction: '1',
+      velocity: '5',
+      diameter: '350',
+      width: '400',
+      height: '300',
+    },
     {
       flow: 'airflow',
       friction: 'ductFric',
       velocity: 'velocity',
-      side: 'dia',
+      diameter: 'dia',
+      width: 'dia',
+      height: 'dia',
     },
   );
   const [method, setMethod] = useState('friction');
@@ -648,44 +658,97 @@ function DuctSizingCalc() {
 
   const r = useMemo(() => {
     const flowM3s = toSI(num(vals.flow), 'airflow', sys) / 1000;
-    const diaM =
-      method === 'friction'
-        ? ductDiaForFriction(flowM3s, toSI(num(vals.friction), 'ductFric', sys))
-        : ductDiaForVelocity(flowM3s, toSI(num(vals.velocity), 'velocity', sys));
-    const pt = ductAt(flowM3s, diaM);
-    const stdMm = nextStandardDuct(diaM * 1000);
-    let rectOther = 0;
-    if (shape === 'rectangular') {
-      const sideM = toSI(num(vals.side), 'dia', sys) / 1000;
-      if (sideM > 0) rectOther = rectSideForDia(diaM, sideM);
+    let velocity = 0;
+    let friction = 0;
+    let vp = 0;
+    let diaM = 0;
+    let stdMm = 0;
+    let rectW = 0;
+
+    if (method === 'dimensions') {
+      // The user sets the size; we report what it produces.
+      if (shape === 'round') {
+        diaM = toSI(num(vals.diameter), 'dia', sys) / 1000;
+        const pt = ductAt(flowM3s, diaM);
+        velocity = pt.velocity;
+        friction = pt.frictionRate;
+        vp = pt.velocityPressure;
+      } else {
+        const w = toSI(num(vals.width), 'dia', sys) / 1000;
+        const h = toSI(num(vals.height), 'dia', sys) / 1000;
+        const area = w * h;
+        velocity = area > 0 ? flowM3s / area : 0;
+        diaM = w > 0 && h > 0 ? equivDiameter(w, h) : 0;
+        friction = diaM > 0 ? ductAt(flowM3s, diaM).frictionRate : 0;
+        vp = 0.6 * velocity * velocity;
+      }
+    } else {
+      // We size the duct for a friction-rate or velocity target.
+      diaM =
+        method === 'friction'
+          ? ductDiaForFriction(
+              flowM3s,
+              toSI(num(vals.friction), 'ductFric', sys),
+            )
+          : ductDiaForVelocity(
+              flowM3s,
+              toSI(num(vals.velocity), 'velocity', sys),
+            );
+      const pt = ductAt(flowM3s, diaM);
+      velocity = pt.velocity;
+      friction = pt.frictionRate;
+      vp = pt.velocityPressure;
+      stdMm = nextStandardDuct(diaM * 1000);
+      if (shape === 'rectangular') {
+        const hM = toSI(num(vals.height), 'dia', sys) / 1000;
+        if (hM > 0) rectW = rectSideForDia(diaM, hM);
+      }
     }
-    return { diaM, pt, stdMm, rectOther };
+    return { velocity, friction, vp, diaM, stdMm, rectW };
   }, [vals, sys, method, shape]);
 
-  const rows: [string, string][] = [
-    [
-      'Required round diameter',
-      `${fmt(toDisp(r.diaM * 1000, 'dia', sys), sys === 'IP' ? 2 : 0)} ${uLabel('dia', sys)}`,
-    ],
-  ];
-  if (shape === 'round') {
-    rows.push([
-      'Next standard size',
-      `${fmt(toDisp(r.stdMm, 'dia', sys), sys === 'IP' ? 2 : 0)} ${uLabel('dia', sys)}`,
-    ]);
+  const d0 = sys === 'IP' ? 2 : 0;
+  const rows: [string, string][] = [];
+  if (method === 'dimensions') {
+    if (shape === 'rectangular') {
+      rows.push([
+        'Equivalent round diameter',
+        `${fmt(toDisp(r.diaM * 1000, 'dia', sys), d0)} ${uLabel('dia', sys)}`,
+      ]);
+    }
   } else {
     rows.push([
-      'Rectangular size',
-      `${fmt(toDisp(r.rectOther * 1000, 'dia', sys), 0)} × ${fmt(
-        toDisp(toSI(num(vals.side), 'dia', sys), 'dia', sys),
-        0,
-      )} ${uLabel('dia', sys)}`,
+      'Required round diameter',
+      `${fmt(toDisp(r.diaM * 1000, 'dia', sys), d0)} ${uLabel('dia', sys)}`,
     ]);
+    if (shape === 'round') {
+      rows.push([
+        'Next standard size',
+        `${fmt(toDisp(r.stdMm, 'dia', sys), d0)} ${uLabel('dia', sys)}`,
+      ]);
+    } else {
+      rows.push([
+        'Rectangular size W x H',
+        `${fmt(toDisp(r.rectW * 1000, 'dia', sys), 0)} × ${fmt(
+          num(vals.height),
+          0,
+        )} ${uLabel('dia', sys)}`,
+      ]);
+    }
   }
   rows.push(
-    ['Velocity', `${fmt(toDisp(r.pt.velocity, 'velocity', sys), sys === 'IP' ? 0 : 2)} ${uLabel('velocity', sys)}`],
-    ['Friction rate', `${fmt(toDisp(r.pt.frictionRate, 'ductFric', sys), 2)} ${uLabel('ductFric', sys)}`],
-    ['Velocity pressure', `${fmt(toDisp(r.pt.velocityPressure, 'pressure', sys), sys === 'IP' ? 3 : 1)} ${uLabel('pressure', sys)}`],
+    [
+      'Velocity',
+      `${fmt(toDisp(r.velocity, 'velocity', sys), sys === 'IP' ? 0 : 2)} ${uLabel('velocity', sys)}`,
+    ],
+    [
+      'Friction rate',
+      `${fmt(toDisp(r.friction, 'ductFric', sys), 2)} ${uLabel('ductFric', sys)}`,
+    ],
+    [
+      'Velocity pressure',
+      `${fmt(toDisp(r.vp, 'pressure', sys), sys === 'IP' ? 3 : 1)} ${uLabel('pressure', sys)}`,
+    ],
   );
 
   return (
@@ -699,31 +762,15 @@ function DuctSizingCalc() {
           unit={uLabel('airflow', sys)}
         />
         <SelectField
-          label="Size by"
+          label="Mode"
           value={method}
           onChange={setMethod}
           options={[
-            { value: 'friction', label: 'Friction rate' },
-            { value: 'velocity', label: 'Velocity' },
+            { value: 'friction', label: 'Size by friction rate' },
+            { value: 'velocity', label: 'Size by velocity' },
+            { value: 'dimensions', label: 'Set my own size' },
           ]}
         />
-        {method === 'friction' ? (
-          <Field
-            label="Target friction rate"
-            value={vals.friction}
-            onChange={(v) => set('friction', v)}
-            unit={uLabel('ductFric', sys)}
-            step={0.1}
-          />
-        ) : (
-          <Field
-            label="Target velocity"
-            value={vals.velocity}
-            onChange={(v) => set('velocity', v)}
-            unit={uLabel('velocity', sys)}
-            step={0.5}
-          />
-        )}
         <SelectField
           label="Duct shape"
           value={shape}
@@ -733,11 +780,56 @@ function DuctSizingCalc() {
             { value: 'rectangular', label: 'Rectangular' },
           ]}
         />
-        {shape === 'rectangular' && (
+        {method === 'friction' && (
+          <Field
+            label="Target friction rate"
+            value={vals.friction}
+            onChange={(v) => set('friction', v)}
+            unit={uLabel('ductFric', sys)}
+            step={0.1}
+          />
+        )}
+        {method === 'velocity' && (
+          <Field
+            label="Target velocity"
+            value={vals.velocity}
+            onChange={(v) => set('velocity', v)}
+            unit={uLabel('velocity', sys)}
+            step={0.5}
+          />
+        )}
+        {method === 'dimensions' && shape === 'round' && (
+          <Field
+            label="Duct diameter"
+            value={vals.diameter}
+            onChange={(v) => set('diameter', v)}
+            unit={uLabel('dia', sys)}
+            step={25}
+          />
+        )}
+        {method === 'dimensions' && shape === 'rectangular' && (
+          <>
+            <Field
+              label="Duct width"
+              value={vals.width}
+              onChange={(v) => set('width', v)}
+              unit={uLabel('dia', sys)}
+              step={25}
+            />
+            <Field
+              label="Duct height"
+              value={vals.height}
+              onChange={(v) => set('height', v)}
+              unit={uLabel('dia', sys)}
+              step={25}
+            />
+          </>
+        )}
+        {method !== 'dimensions' && shape === 'rectangular' && (
           <Field
             label="Known duct height"
-            value={vals.side}
-            onChange={(v) => set('side', v)}
+            value={vals.height}
+            onChange={(v) => set('height', v)}
             unit={uLabel('dia', sys)}
             step={25}
           />
@@ -745,8 +837,9 @@ function DuctSizingCalc() {
       </Grid>
       <Results rows={rows} />
       <Note>
-        Sized from the Colebrook duct-friction equation for galvanised steel.
-        Comfort ducts typically run 4–6 m/s or about 0.8–1.2 Pa/m.
+        {method === 'dimensions'
+          ? 'Enter the exact duct size you want — diameter for round, width and height for rectangular — and see the velocity and friction it produces. Comfort ducts usually run 4–6 m/s.'
+          : 'Friction-rate or velocity sizing from the Colebrook duct-friction equation for galvanised steel. Comfort ducts typically run 4–6 m/s or about 0.8–1.2 Pa/m.'}
       </Note>
     </>
   );
