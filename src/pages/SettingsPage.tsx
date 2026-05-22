@@ -334,8 +334,8 @@ export function SettingsPage() {
           </div>
         </dl>
         <p className="mt-3 text-xs text-slate-400">
-          Viszio HVAC by Yakuver Solutions Ltd. Standards study guides are
-          independent and not affiliated with ASHRAE, SMACNA, ACCA, AHRI or ICC.
+          Standards study guides are independent and not affiliated with
+          ASHRAE, SMACNA, ACCA, AHRI or ICC.
         </p>
       </Section>
     </div>

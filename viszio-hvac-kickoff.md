@@ -6,7 +6,7 @@
 
 ## Project: Viszio HVAC
 
-You are building **Viszio HVAC** — a searchable HVAC knowledge library + Duolingo-style course app for engineers. This is a follow-up project to BMS Mastery (live at gabsno.github.io/bms-mastery/), built by the same person (Gabs / Yakuver Solutions Ltd, Ghana). It must follow the same shipping pattern: GitHub Pages deploy, free Gemini + Claude AI tutor, auto-update banner, mobile-first responsive.
+You are building **Viszio HVAC** — a searchable HVAC knowledge library + Duolingo-style course app for engineers. This is a follow-up project to BMS Mastery (live at gabsno.github.io/bms-mastery/), built by the same person (Gabs, Ghana). It must follow the same shipping pattern: GitHub Pages deploy, free Gemini + Claude AI tutor, auto-update banner, mobile-first responsive.
 
 This project will eventually become a paid SaaS — so SaaS scaffolding must be built in from day one, even if disabled in v1.0.
 

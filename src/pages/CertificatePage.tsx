@@ -111,9 +111,7 @@ export function CertificatePage() {
 
         <div className="mx-auto mt-6 h-px w-24 bg-teal-300" />
         <p className="mt-3 text-xs text-slate-500">Issued {today}</p>
-        <p className="text-[10px] text-slate-400">
-          Viszio HVAC · Yakuver Solutions Ltd
-        </p>
+        <p className="text-[10px] text-slate-400">Viszio HVAC</p>
       </div>
 
       {isComplete ? (
