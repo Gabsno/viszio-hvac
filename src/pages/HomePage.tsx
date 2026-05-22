@@ -7,6 +7,10 @@ import {
   CheckCircle2,
   Bookmark,
   ArrowRight,
+  Calculator,
+  MapPin,
+  BookA,
+  Layers,
 } from 'lucide-react';
 import { ARTICLES, TREE, getArticles } from '../lib/content';
 import { PILLARS } from '../content/pillars';
@@ -152,7 +156,67 @@ export function HomePage() {
           />
         </Link>
       </section>
+
+      {/* More to explore */}
+      <section className="mt-8">
+        <h2 className="mb-3 text-lg font-bold text-slate-900 dark:text-white">
+          More to explore
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <MoreCard
+            to="/tools"
+            icon={<Calculator size={18} />}
+            title="Tools"
+            text="Seven engineering calculators."
+          />
+          <MoreCard
+            to="/design-data"
+            icon={<MapPin size={18} />}
+            title="Design Data"
+            text="Ghana & Africa climate design conditions."
+          />
+          <MoreCard
+            to="/glossary"
+            icon={<BookA size={18} />}
+            title="Glossary"
+            text="HVAC terms explained plainly."
+          />
+          <MoreCard
+            to="/flashcards"
+            icon={<Layers size={18} />}
+            title="Flashcards"
+            text="Revise key terms, card by card."
+          />
+        </div>
+      </section>
     </div>
+  );
+}
+
+function MoreCard({
+  to,
+  icon,
+  title,
+  text,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group rounded-xl border border-slate-200 bg-white p-4 transition hover:border-teal-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-teal-600"
+    >
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">
+        {icon}
+      </span>
+      <h3 className="mt-2.5 font-bold text-slate-900 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-300">
+        {title}
+      </h3>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{text}</p>
+    </Link>
   );
 }
 

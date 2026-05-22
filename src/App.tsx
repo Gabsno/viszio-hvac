@@ -13,6 +13,9 @@ import { LessonPage } from './pages/LessonPage';
 import { CertificatePage } from './pages/CertificatePage';
 import { ToolsPage } from './pages/ToolsPage';
 import { ToolPage } from './pages/ToolPage';
+import { DesignDataPage } from './pages/DesignDataPage';
+import { GlossaryPage } from './pages/GlossaryPage';
+import { FlashcardsPage } from './pages/FlashcardsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LoginPage } from './pages/LoginPage';
 import { useSettingsStore } from './store/useSettingsStore';
@@ -47,6 +50,9 @@ export default function App() {
           <Route path="/certificate" element={<CertificatePage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/tools/:id" element={<ToolPage />} />
+          <Route path="/design-data" element={<DesignDataPage />} />
+          <Route path="/glossary" element={<GlossaryPage />} />
+          <Route path="/flashcards" element={<FlashcardsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />

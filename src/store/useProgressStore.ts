@@ -27,6 +27,7 @@ interface ProgressState {
   completedLessons: string[];
   quizScores: Record<string, number>; // lessonId -> percent
   trophies: string[];
+  flashcardsKnown: string[]; // glossary terms marked "got it"
 
   // actions
   toggleBookmark: (id: string) => void;
@@ -41,6 +42,7 @@ interface ProgressState {
   completeLesson: (lessonId: string, scorePercent: number, xp: number) => void;
   isLessonComplete: (lessonId: string) => boolean;
   awardTrophy: (id: string) => void;
+  setCardKnown: (term: string, known: boolean) => void;
   resetProgress: () => void;
 }
 
@@ -57,6 +59,7 @@ export const useProgressStore = create<ProgressState>()(
       completedLessons: [],
       quizScores: {},
       trophies: [],
+      flashcardsKnown: [],
 
       toggleBookmark: (id) =>
         set((s) => ({
@@ -128,6 +131,15 @@ export const useProgressStore = create<ProgressState>()(
             ? s
             : { trophies: [...s.trophies, id] },
         ),
+
+      setCardKnown: (term, known) =>
+        set((s) => ({
+          flashcardsKnown: known
+            ? s.flashcardsKnown.includes(term)
+              ? s.flashcardsKnown
+              : [...s.flashcardsKnown, term]
+            : s.flashcardsKnown.filter((t) => t !== term),
+        })),
 
       resetProgress: () =>
         set({
