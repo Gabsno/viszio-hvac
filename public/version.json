@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "buildHash": "02b4406a976f",
   "builtAt": "2026-05-22T14:21:10.410Z",
-  "status": "revoked",
-  "message": "Kill-switch test in progress — Viszio HVAC will be back online in a few minutes.",
+  "status": "active",
+  "message": "",
   "newUrl": ""
 }
