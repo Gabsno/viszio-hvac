@@ -11,8 +11,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
+  Printer,
+  Volume2,
+  Square,
 } from 'lucide-react';
-import { ARTICLES, getArticle, extractToc } from '../lib/content';
+import { ARTICLES, getArticle, extractToc, toPlainText } from '../lib/content';
 import { DifficultyBadge, TierBadge, RegionBadge } from '../components/Badges';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { TableOfContents } from '../components/TableOfContents';
@@ -38,14 +41,41 @@ export function ArticlePage() {
 
   const [showNotes, setShowNotes] = useState(false);
   const [noteDraft, setNoteDraft] = useState(savedNote);
+  const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setNoteDraft(savedNote);
     setShowNotes(false);
+    setSpeaking(false);
+    window.speechSynthesis?.cancel();
     if (article) recordActivity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Stop any read-aloud when leaving the article.
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+
+  function toggleSpeak() {
+    const synth = window.speechSynthesis;
+    if (!synth || !article) return;
+    if (speaking) {
+      synth.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const text = `${article.title}. ${toPlainText(article.body)}`.slice(
+      0,
+      28000,
+    );
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1;
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    synth.cancel();
+    synth.speak(utter);
+    setSpeaking(true);
+  }
 
   // Debounced note persistence.
   useEffect(() => {
@@ -112,7 +142,7 @@ export function ArticlePage() {
         </div>
 
         {/* Action bar */}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="no-print mt-4 flex flex-wrap gap-2">
           <button
             onClick={() => toggleBookmark(article.id)}
             className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
@@ -158,10 +188,29 @@ export function ArticlePage() {
           >
             <StickyNote size={15} /> Notes
           </button>
+
+          <button
+            onClick={toggleSpeak}
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+              speaking
+                ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                : 'border-slate-300 text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300'
+            }`}
+          >
+            {speaking ? <Square size={15} /> : <Volume2 size={15} />}
+            {speaking ? 'Stop' : 'Listen'}
+          </button>
+
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+          >
+            <Printer size={15} /> Save PDF
+          </button>
         </div>
 
         {showNotes && (
-          <div className="mt-3">
+          <div className="no-print mt-3">
             <textarea
               value={noteDraft}
               onChange={(e) => setNoteDraft(e.target.value)}
@@ -174,7 +223,7 @@ export function ArticlePage() {
 
         {/* Mobile TOC */}
         {toc.length >= 2 && (
-          <details className="mt-5 rounded-lg border border-slate-200 p-3 xl:hidden dark:border-slate-800">
+          <details className="no-print mt-5 rounded-lg border border-slate-200 p-3 xl:hidden dark:border-slate-800">
             <summary className="cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300">
               On this page
             </summary>
@@ -208,11 +257,13 @@ export function ArticlePage() {
           </div>
         )}
 
-        <RelatedArticles ids={article.related} />
+        <div className="no-print">
+          <RelatedArticles ids={article.related} />
+        </div>
 
         {/* Prev / next within topic */}
         {(prev || next) && (
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          <div className="no-print mt-6 grid gap-2 sm:grid-cols-2">
             {prev ? (
               <Link
                 to={`/article/${prev.id}`}

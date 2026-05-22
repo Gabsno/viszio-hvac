@@ -205,3 +205,98 @@ body {
 .animate-fade-in {
   animation: fade-in 0.18s ease-out;
 }
+
+/* ----------------------------------------------------------------------- */
+/* Accessibility — font size and reading modes                             */
+/* ----------------------------------------------------------------------- */
+html[data-font-size='small'] {
+  font-size: 93.75%;
+}
+html[data-font-size='normal'] {
+  font-size: 100%;
+}
+html[data-font-size='large'] {
+  font-size: 112.5%;
+}
+html[data-font-size='xlarge'] {
+  font-size: 125%;
+}
+
+/* Dyslexia-friendly: looser spacing and taller lines for the article body */
+html[data-reading-mode='dyslexia'] .article-body {
+  letter-spacing: 0.045em;
+  word-spacing: 0.14em;
+  line-height: 2.05;
+}
+html[data-reading-mode='dyslexia'] .article-body p,
+html[data-reading-mode='dyslexia'] .article-body li {
+  max-width: 62ch;
+}
+
+/* High-contrast: maximise text contrast and strengthen borders */
+html[data-reading-mode='high-contrast'] .article-body,
+html[data-reading-mode='high-contrast'] .article-body p,
+html[data-reading-mode='high-contrast'] .article-body li {
+  color: #000;
+}
+html[data-reading-mode='high-contrast'] .article-body h1,
+html[data-reading-mode='high-contrast'] .article-body h2,
+html[data-reading-mode='high-contrast'] .article-body h3,
+html[data-reading-mode='high-contrast'] .article-body strong {
+  color: #000;
+}
+html[data-reading-mode='high-contrast'] .article-body a {
+  color: #0a4f63;
+  text-decoration-thickness: 2px;
+}
+html.dark[data-reading-mode='high-contrast'] .article-body,
+html.dark[data-reading-mode='high-contrast'] .article-body p,
+html.dark[data-reading-mode='high-contrast'] .article-body li,
+html.dark[data-reading-mode='high-contrast'] .article-body h1,
+html.dark[data-reading-mode='high-contrast'] .article-body h2,
+html.dark[data-reading-mode='high-contrast'] .article-body h3,
+html.dark[data-reading-mode='high-contrast'] .article-body strong {
+  color: #fff;
+}
+html.dark[data-reading-mode='high-contrast'] .article-body a {
+  color: #7dd3fc;
+}
+
+/* ----------------------------------------------------------------------- */
+/* Print — used for "Save as PDF" on articles and the certificate          */
+/* ----------------------------------------------------------------------- */
+@media print {
+  header,
+  aside,
+  .no-print {
+    display: none !important;
+  }
+  body,
+  .dark body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .article-body {
+    color: #000 !important;
+    font-size: 11pt;
+  }
+  .article-body a {
+    color: #000 !important;
+    text-decoration: none;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  /* The completion certificate fills the printed page */
+  .certificate {
+    page-break-inside: avoid;
+  }
+  @page {
+    margin: 16mm;
+  }
+}
+

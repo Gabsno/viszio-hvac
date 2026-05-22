@@ -120,6 +120,32 @@ export function CoursePage() {
         </div>
       </div>
 
+      {/* Certificate link */}
+      <Link
+        to="/certificate"
+        className={`mt-4 flex items-center gap-3 rounded-xl border p-4 transition ${
+          pct === 100
+            ? 'border-teal-400 bg-teal-50 hover:border-teal-500 dark:border-teal-700 dark:bg-teal-950/40'
+            : 'border-slate-200 bg-white hover:border-teal-400 dark:border-slate-800 dark:bg-slate-900'
+        }`}
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-white">
+          <Award size={20} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-bold text-slate-900 dark:text-white">
+            {pct === 100
+              ? 'Your certificate is ready'
+              : 'Course completion certificate'}
+          </p>
+          <p className="text-xs text-slate-500">
+            {pct === 100
+              ? 'Add your name and print or save it as a PDF.'
+              : `Finish all ${lessonTotal} lessons to unlock it — ${pct}% done.`}
+          </p>
+        </div>
+      </Link>
+
       {/* Module path */}
       <div className="mt-6 space-y-6">
         {COURSE.map((module) => {

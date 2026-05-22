@@ -10,17 +10,28 @@ import { LibraryPage } from './pages/LibraryPage';
 import { ArticlePage } from './pages/ArticlePage';
 import { CoursePage } from './pages/CoursePage';
 import { LessonPage } from './pages/LessonPage';
+import { CertificatePage } from './pages/CertificatePage';
+import { ToolsPage } from './pages/ToolsPage';
+import { ToolPage } from './pages/ToolPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LoginPage } from './pages/LoginPage';
 import { useSettingsStore } from './store/useSettingsStore';
 
 export default function App() {
   const theme = useSettingsStore((s) => s.theme);
+  const fontSize = useSettingsStore((s) => s.fontSize);
+  const readingMode = useSettingsStore((s) => s.readingMode);
 
   // Reflect the chosen theme on <html> for Tailwind's `dark:` variants.
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
+
+  // Accessibility preferences applied as data attributes on <html>.
+  useEffect(() => {
+    document.documentElement.dataset.fontSize = fontSize;
+    document.documentElement.dataset.readingMode = readingMode;
+  }, [fontSize, readingMode]);
 
   return (
     <>
@@ -33,6 +44,9 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/course" element={<CoursePage />} />
           <Route path="/course/:lessonId" element={<LessonPage />} />
+          <Route path="/certificate" element={<CertificatePage />} />
+          <Route path="/tools" element={<ToolsPage />} />
+          <Route path="/tools/:id" element={<ToolPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />

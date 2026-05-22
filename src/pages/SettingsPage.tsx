@@ -8,7 +8,9 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  Accessibility,
 } from 'lucide-react';
+import type { FontSize, ReadingMode } from '../store/useSettingsStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useUserStore } from '../store/useUserStore';
@@ -41,10 +43,14 @@ export function SettingsPage() {
     geminiKey,
     claudeKey,
     theme,
+    fontSize,
+    readingMode,
     setProvider,
     setGeminiKey,
     setClaudeKey,
     setTheme,
+    setFontSize,
+    setReadingMode,
   } = useSettingsStore();
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const tier = useUserStore((s) => s.tier);
@@ -195,6 +201,72 @@ export function SettingsPage() {
                 {t}
               </button>
             ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* Accessibility */}
+      <Section
+        icon={<Accessibility size={15} />}
+        title="Accessibility & reading"
+      >
+        <div className="space-y-4">
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Text size
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  ['small', 'Small'],
+                  ['normal', 'Normal'],
+                  ['large', 'Large'],
+                  ['xlarge', 'Largest'],
+                ] as [FontSize, string][]
+              ).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setFontSize(val)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                    fontSize === val
+                      ? 'bg-teal-700 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Reading mode
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  ['default', 'Default'],
+                  ['high-contrast', 'High contrast'],
+                  ['dyslexia', 'Dyslexia-friendly'],
+                ] as [ReadingMode, string][]
+              ).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setReadingMode(val)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                    readingMode === val
+                      ? 'bg-teal-700 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-xs text-slate-400">
+              Dyslexia-friendly mode adds letter and line spacing in articles.
+              High contrast maximises text contrast for easier reading.
+            </p>
           </div>
         </div>
       </Section>

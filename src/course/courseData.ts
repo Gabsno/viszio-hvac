@@ -2,7 +2,7 @@ import type { CourseModule, Trophy } from '../types';
 
 // The guided course. Lessons teach from the same Markdown articles as the
 // library (no duplicated content) and end in a short quiz. The final module
-// is a capstone challenge.
+// is a capstone challenge. The course spans the full 78-article library.
 
 export const COURSE: CourseModule[] = [
   {
@@ -38,30 +38,15 @@ export const COURSE: CourseModule[] = [
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Sensible heat changes dry-bulb temperature; latent heat changes moisture content.',
+              'Sensible heat raises or lowers dry-bulb temperature; latent heat changes moisture content (humidity).',
           },
           {
             id: 'q3',
-            kind: 'multiple-choice',
-            prompt: 'Removing moisture from air without changing its temperature is a…',
-            choices: [
-              'Sensible cooling process',
-              'Latent (dehumidification) process',
-              'Heating process',
-              'Mixing process',
-            ],
-            answer: 1,
-            explanation:
-              'Latent processes change humidity ratio; pure dehumidification removes moisture.',
-          },
-          {
-            id: 'q4',
             kind: 'short-answer',
-            prompt:
-              'In a hot-humid climate like Accra, which load — sensible or latent — tends to be unusually large?',
+            prompt: 'What kind of heat is removed when water vapour condenses out of the air?',
             answer: 'latent',
             explanation:
-              'High outdoor humidity makes the latent (moisture) load a major share of the total cooling load.',
+              'Condensing moisture releases latent heat; dehumidification removes that latent load.',
           },
         ],
       },
@@ -78,35 +63,98 @@ export const COURSE: CourseModule[] = [
             choices: [
               'Humidification',
               'Sensible cooling',
-              'Heating',
-              'Dehumidification',
+              'Sensible heating',
+              'Mixing of two airstreams',
             ],
             answer: 1,
             explanation:
-              'Moving left at constant humidity ratio lowers dry-bulb temperature — sensible cooling.',
+              'The horizontal axis is dry-bulb temperature; moving left at constant humidity ratio is pure sensible cooling.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'The saturation curve on the chart represents 100% relative humidity.',
+            prompt: 'Cooling with dehumidification moves the air state down and to the left on the chart.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'The curved left boundary is the saturation line — air at 100% RH.',
+              'Lower temperature (left) and lower humidity ratio (down) — the typical cooling-coil process.',
           },
           {
             id: 'q3',
             kind: 'multiple-choice',
-            prompt: 'A real cooling coil process line moves…',
-            choices: [
-              'Straight down only',
-              'Straight left only',
-              'Down and to the left (cooling + dehumidification)',
-              'Up and to the right',
-            ],
+            prompt: 'Which is one of the four basic HVAC processes?',
+            choices: ['Combustion', 'Heating', 'Filtration', 'Pumping'],
+            answer: 1,
+            explanation:
+              'The four basic processes are heating, cooling, humidification and dehumidification.',
+          },
+        ],
+      },
+      {
+        id: 'l1-3',
+        title: 'How cooling actually happens',
+        articleIds: ['refr-01', 'fund-heat-transfer'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Which component of the vapor-compression cycle rejects heat to the outdoors?',
+            choices: ['Evaporator', 'Compressor', 'Condenser', 'Expansion valve'],
             answer: 2,
             explanation:
-              'A wet coil cools and dehumidifies, so the process line trends down-left toward the apparatus dew point.',
+              'The condenser rejects heat as the high-pressure refrigerant condenses; the evaporator absorbs heat indoors.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'The expansion device lowers the pressure and temperature of the refrigerant before the evaporator.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'The expansion valve or capillary drops pressure, allowing the refrigerant to boil at a low temperature in the evaporator.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Name the mode of heat transfer that needs a fluid in motion to carry heat.',
+            answer: 'convection',
+            explanation:
+              'Convection moves heat via a moving fluid; conduction and radiation are the other two modes.',
+          },
+        ],
+      },
+      {
+        id: 'l1-4',
+        title: 'Airflow & units',
+        articleIds: ['fund-airflow', 'fund-units'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'By the fan laws, doubling fan speed changes airflow by a factor of…',
+            choices: ['0.5', '1', '2', '4'],
+            answer: 2,
+            explanation:
+              'Airflow is proportional to speed; pressure to speed squared; power to speed cubed.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'One ton of refrigeration equals 12,000 BTU/h.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'A ton of cooling is defined as 12,000 BTU/h, roughly 3.517 kW.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'What does CFM stand for as a unit of airflow?',
+            answer: 'cubic feet per minute',
+            explanation:
+              'CFM (cubic feet per minute) is the imperial volumetric airflow unit; L/s is the metric equivalent.',
           },
         ],
       },
@@ -114,52 +162,159 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm2',
-    title: 'Calculating Loads',
-    description: 'How engineers size cooling: the CLTD and RTS methods.',
-    icon: 'Gauge',
+    title: 'Cooling Load Calculations',
+    description: 'Sizing the cooling load — the number every project depends on.',
+    icon: 'Calculator',
     lessons: [
       {
         id: 'l2-1',
-        title: 'Cooling load methods',
-        articleIds: ['load-01', 'load-02'],
+        title: 'The load calculation process',
+        articleIds: ['load-overview', 'load-rules-of-thumb'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'The CLTD method is best described as…',
+            prompt: 'A cooling load calculation primarily determines…',
             choices: [
-              'A dynamic hour-by-hour simulation',
-              'A simplified, table-based hand-calculation method',
-              'A refrigerant charging procedure',
-              'An airflow measurement technique',
+              'The colour of the ductwork',
+              'The required cooling capacity for a space',
+              'The electrical panel schedule',
+              'The fire rating of the walls',
             ],
             answer: 1,
             explanation:
-              'CLTD/CLF uses pre-computed tables to approximate the effect of thermal storage — a manual-friendly method.',
+              'A load calculation totals all heat gains so equipment can be sized to the actual demand.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'The Radiant Time Series (RTS) method accounts for thermal lag in building mass.',
+            prompt: 'Rules of thumb are a substitute for a detailed load calculation on final design.',
+            choices: ['True', 'False'],
+            answer: 1,
+            explanation:
+              'Rules of thumb are useful for early checks only; final equipment selection needs a detailed calculation.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Oversizing cooling equipment most harms which performance area?',
+            answer: 'humidity',
+            explanation:
+              'Oversized units short-cycle and run too little to dehumidify, leaving spaces cool but clammy.',
+          },
+        ],
+      },
+      {
+        id: 'l2-2',
+        title: 'Where the heat comes from',
+        articleIds: ['load-internal-gains', 'load-solar'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Which of these is an internal heat gain?',
+            choices: ['Solar radiation through glass', 'Lighting and equipment', 'Outdoor air infiltration', 'Conduction through the roof'],
+            answer: 1,
+            explanation:
+              'Internal gains come from people, lighting and equipment inside the space.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Solar heat gain through glazing depends on orientation and shading.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'RTS uses radiant time factors to spread absorbed heat across later hours — modelling thermal storage.',
+              'West and east glass take the strongest direct sun; shading and SHGC reduce the gain.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'People add both sensible heat and what other kind of heat to a space?',
+            answer: 'latent',
+            explanation:
+              'Occupants emit sensible heat and latent heat (moisture from respiration and perspiration).',
+          },
+        ],
+      },
+      {
+        id: 'l2-3',
+        title: 'Outdoor air & calculation methods',
+        articleIds: ['load-infiltration', 'load-01', 'load-02'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'The CLTD method is used to estimate…',
+            choices: [
+              'Pump head',
+              'Conduction heat gain through walls and roofs',
+              'Duct friction loss',
+              'Refrigerant charge',
+            ],
+            answer: 1,
+            explanation:
+              'CLTD (Cooling Load Temperature Difference) accounts for time-lag conduction gains through the envelope.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'The Radiant Time Series (RTS) method is a more modern load calculation method than CLTD.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'RTS is the current ASHRAE-recommended method; CLTD/CLF is the older simplified approach.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Uncontrolled outdoor air leaking in through cracks and openings is called what?',
+            answer: 'infiltration',
+            explanation:
+              'Infiltration is unintended air leakage; ventilation is the intentional, designed outdoor air.',
+          },
+        ],
+      },
+      {
+        id: 'l2-4',
+        title: 'Block vs room load',
+        articleIds: ['load-block-vs-room', 'load-heating'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A block load is used to size…',
+            choices: [
+              'Each individual diffuser',
+              'The central plant or air handler serving multiple zones',
+              'The thermostat wiring',
+              'The condensate drain',
+            ],
+            answer: 1,
+            explanation:
+              'Block load is the simultaneous peak of all zones — it sizes central equipment. Room loads size terminal units.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'The sum of room peak loads is usually larger than the block load.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Zones peak at different times, so block load (the coincident peak) is lower than the sum of room peaks.',
           },
           {
             id: 'q3',
             kind: 'multiple-choice',
-            prompt: 'Why does peak cooling load usually lag peak solar gain?',
-            choices: [
-              'Sensor error',
-              'Thermal storage in the building structure delays heat release',
-              'The sun moves slowly',
-              'Air is compressible',
-            ],
-            answer: 1,
+            prompt: 'A heating load calculation generally ignores which gain that a cooling load includes?',
+            choices: ['Conduction loss', 'Infiltration', 'Solar and internal gains', 'Outdoor design temperature'],
+            answer: 2,
             explanation:
-              'Heat absorbed by mass is re-released hours later, shifting the load peak.',
+              'Heating loads are usually figured at night/no-sun with no internal gains, as a conservative worst case.',
           },
         ],
       },
@@ -167,83 +322,119 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm3',
-    title: 'Moving Air & Water',
-    description: 'Sizing ductwork and chilled-water pipework.',
-    icon: 'Wind',
+    title: 'Chillers & Central Cooling',
+    description: 'Water-cooled and air-cooled plant for larger buildings.',
+    icon: 'Snowflake',
     lessons: [
       {
         id: 'l3-1',
-        title: 'Duct design',
-        articleIds: ['duct-01', 'duct-02'],
+        title: 'Air-cooled vs water-cooled',
+        articleIds: ['chil-01', 'chil-02'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'The equal-friction method sizes ducts so that…',
+            prompt: 'Compared with air-cooled chillers, water-cooled chillers generally have…',
             choices: [
-              'Every duct has the same velocity',
-              'Pressure loss per unit length is roughly constant',
-              'Every duct is the same diameter',
-              'Static pressure is recovered at each fitting',
+              'Worse efficiency',
+              'Better efficiency but need a cooling tower',
+              'No condenser at all',
+              'No need for water treatment',
             ],
             answer: 1,
             explanation:
-              'Equal friction holds a constant friction rate (e.g. Pa/m) through the system.',
+              'Water-cooled chillers reject heat at lower condensing temperatures, so they are more efficient — but they need a tower and water treatment.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'Static regain design aims to keep static pressure roughly constant at each branch.',
+            prompt: 'A centrifugal chiller is well suited to large cooling capacities.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Static regain trades velocity for static pressure so downstream branches see similar static.',
+              'Centrifugal compressors excel at high tonnage; scroll and screw machines cover small and mid ranges.',
           },
           {
             id: 'q3',
-            kind: 'multiple-choice',
-            prompt: 'A fitting loss coefficient (C) is multiplied by…',
-            choices: [
-              'The duct length',
-              'The velocity pressure',
-              'The air temperature',
-              'The sheet-metal gauge',
-            ],
-            answer: 1,
+            kind: 'short-answer',
+            prompt: 'What is the device that rejects condenser heat to the atmosphere by evaporation?',
+            answer: 'cooling tower',
             explanation:
-              'Dynamic (fitting) loss = C × velocity pressure.',
+              'A cooling tower evaporatively cools the condenser water loop of a water-cooled chiller plant.',
           },
         ],
       },
       {
         id: 'l3-2',
-        title: 'Pipe sizing',
-        articleIds: ['pipe-01'],
+        title: 'Cooling towers & chilled water',
+        articleIds: ['ct-01', 'cool-chw-systems'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'Chilled-water pipe sizing balances pump energy against…',
-            choices: [
-              'Refrigerant cost',
-              'First cost and the risk of erosion/noise at high velocity',
-              'Duct leakage',
-              'Sheet-metal gauge',
-            ],
+            prompt: 'Cooling tower performance is limited by the…',
+            choices: ['Dry-bulb temperature', 'Wet-bulb temperature', 'Barometric pressure only', 'Refrigerant type'],
             answer: 1,
             explanation:
-              'Larger pipe cuts pumping energy but costs more; very high velocity risks noise and erosion.',
+              'A tower can approach but never reach the ambient wet-bulb temperature — that sets its theoretical limit.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'Designers commonly cap closed-loop water velocity around 2.4–3 m/s to limit noise and erosion.',
+            prompt: 'A primary-secondary chilled water arrangement decouples plant flow from distribution flow.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Typical practice keeps velocities in that band, lower for small pipe near occupied spaces.',
+              'A decoupler bridges the loops so chillers see constant flow while the secondary loop varies with load.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Tower water lost to evaporation and drift must be replaced by what supply?',
+            answer: 'make-up',
+            explanation:
+              'Make-up water replaces evaporation, drift and blowdown losses in the condenser water loop.',
+          },
+        ],
+      },
+      {
+        id: 'l3-3',
+        title: 'Free cooling',
+        articleIds: ['cool-economizer', 'cool-chw-systems'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'An air-side economizer saves energy by…',
+            choices: [
+              'Running the compressor harder',
+              'Using cool outdoor air for cooling when conditions allow',
+              'Adding humidity to the supply air',
+              'Bypassing the air filter',
+            ],
+            answer: 1,
+            explanation:
+              'When outdoor air is cool/dry enough, an economizer cools with free outdoor air instead of mechanical cooling.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A water-side economizer can use the cooling tower to cool chilled water without running the chiller.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'In cool weather a tower (often via a heat exchanger) can directly serve the chilled water loop — free cooling.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Economizer cooling is most effective in what kind of outdoor climate condition?',
+            answer: 'cool',
+            explanation:
+              'Free cooling works best when outdoor air is cool and dry; in hot humid climates its hours are limited.',
           },
         ],
       },
@@ -251,52 +442,124 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm4',
-    title: 'The Refrigeration Cycle',
-    description: 'How vapour compression moves heat uphill.',
-    icon: 'Snowflake',
+    title: 'VRF & DX Systems',
+    description: 'Variable refrigerant flow and direct-expansion packaged systems.',
+    icon: 'Fan',
     lessons: [
       {
         id: 'l4-1',
-        title: 'Vapour-compression cycle',
-        articleIds: ['refr-01'],
+        title: 'VRF architecture',
+        articleIds: ['vrf-01', 'vrf-02'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'Put the four cycle components in order starting from the evaporator:',
+            prompt: 'VRF systems modulate capacity primarily by…',
             choices: [
-              'Evaporator → compressor → condenser → expansion device',
-              'Evaporator → condenser → compressor → expansion device',
-              'Compressor → evaporator → condenser → expansion device',
-              'Condenser → evaporator → expansion device → compressor',
+              'Cycling the compressor on and off',
+              'Varying refrigerant flow with an inverter compressor',
+              'Throttling chilled water valves',
+              'Changing duct sizes',
             ],
-            answer: 0,
+            answer: 1,
             explanation:
-              'Refrigerant evaporates (absorbs heat), is compressed, condenses (rejects heat), then expands.',
+              'VRF uses inverter-driven compressors to vary refrigerant flow to many indoor units precisely.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'The compressor raises refrigerant pressure and temperature.',
+            prompt: 'A heat-recovery VRF system can heat some zones while cooling others simultaneously.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Compression adds energy, raising both pressure and temperature so heat can be rejected at the condenser.',
+              'Heat-recovery (3-pipe) VRF moves heat from cooling zones to heating zones at the same time; heat-pump VRF cannot.',
           },
           {
             id: 'q3',
+            kind: 'short-answer',
+            prompt: 'In a VRF system, what device routes refrigerant to each indoor unit?',
+            answer: 'branch',
+            explanation:
+              'Branch joints or branch selector boxes distribute refrigerant from the outdoor unit to the indoor units.',
+          },
+        ],
+      },
+      {
+        id: 'l4-2',
+        title: 'DX systems & refrigerants',
+        articleIds: ['cool-dx-systems', 'cool-refrigerants'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'COP (coefficient of performance) for cooling equals…',
+            prompt: 'In a "direct expansion" (DX) system, the refrigerant…',
             choices: [
-              'Heat rejected ÷ compressor work',
-              'Useful cooling effect ÷ compressor work input',
-              'Compressor work ÷ cooling effect',
-              'Evaporator pressure ÷ condenser pressure',
+              'Cools water that then cools the air',
+              'Evaporates directly in the coil that cools the supply air',
+              'Is only used for heating',
+              'Never changes phase',
             ],
             answer: 1,
             explanation:
-              'Cooling COP is the useful refrigeration effect divided by the work input.',
+              'In DX systems the refrigerant itself expands in the air-handling coil; there is no intermediate water loop.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A refrigerant with a high Global Warming Potential (GWP) is being phased down under modern regulations.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'High-GWP HFCs like R-410A are being phased down in favour of lower-GWP options such as R-32.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'What refrigerant property measures its damage to stratospheric ozone?',
+            answer: 'odp',
+            explanation:
+              'Ozone Depletion Potential (ODP) drove the phase-out of CFCs and HCFCs; modern HFCs have zero ODP.',
+          },
+        ],
+      },
+      {
+        id: 'l4-3',
+        title: 'Refrigerant piping',
+        articleIds: ['cool-refrigerant-piping', 'cool-dx-systems'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Refrigerant suction lines must be sized and pitched to ensure…',
+            choices: [
+              'Maximum pressure drop',
+              'Oil return to the compressor',
+              'Water drainage',
+              'Electrical grounding',
+            ],
+            answer: 1,
+            explanation:
+              'Suction lines must carry oil back to the compressor; correct sizing and traps maintain refrigerant velocity for oil return.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Oversized refrigerant piping can reduce velocity too much and impair oil return.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Too large a pipe drops velocity below the minimum needed to sweep oil back, especially on vertical risers.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Long refrigerant pipe runs on a VRF system require an additional charge of what?',
+            answer: 'refrigerant',
+            explanation:
+              'Additional refrigerant charge is calculated per metre of liquid line beyond the factory charge length.',
           },
         ],
       },
@@ -304,87 +567,85 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm5',
-    title: 'Central Plant Equipment',
-    description: 'Chillers, cooling towers and pumps.',
-    icon: 'Building2',
+    title: 'Specialised Cooling',
+    description: 'Cold rooms and low-temperature refrigeration applications.',
+    icon: 'Thermometer',
     lessons: [
       {
         id: 'l5-1',
-        title: 'Chillers',
-        articleIds: ['chil-01', 'chil-02'],
+        title: 'Cold room design',
+        articleIds: ['cold-01', 'load-overview'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'Compared with air-cooled chillers, water-cooled chillers generally…',
+            prompt: 'A major cold room load that comfort cooling rarely deals with is…',
             choices: [
-              'Are less efficient',
-              'Are more efficient but need a cooling tower and water treatment',
-              'Need no heat rejection',
-              'Cannot exceed 100 kW',
+              'Lighting gain',
+              'Product pull-down load',
+              'Wall conduction',
+              'Fan motor heat',
             ],
             answer: 1,
             explanation:
-              'Water-cooled units reject heat at a lower temperature, improving efficiency, but add tower and water-treatment scope.',
+              'Cooling stored product down from its entering temperature (pull-down) is a defining cold room load.',
           },
           {
             id: 'q2',
-            kind: 'multiple-choice',
-            prompt: 'Which compressor type is typically used in the largest chillers?',
-            choices: ['Scroll', 'Reciprocating', 'Centrifugal', 'Rotary'],
-            answer: 2,
-            explanation:
-              'Centrifugal compressors dominate large-tonnage chillers; scroll and screw serve smaller ranges.',
-          },
-          {
-            id: 'q3',
             kind: 'true-false',
-            prompt: 'An absorption chiller can be driven by heat instead of large electrical input.',
+            prompt: 'Door openings and infiltration are a significant load in cold room design.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Absorption machines use a thermal driving source (steam, hot water, gas) rather than a large motor.',
+              'Each door opening admits warm humid air; infiltration and the resulting frost load are sized deliberately.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'What process removes frost build-up from a cold room evaporator coil?',
+            answer: 'defrost',
+            explanation:
+              'Periodic defrost (electric, hot-gas or off-cycle) clears coil frost that would otherwise block airflow.',
           },
         ],
       },
       {
         id: 'l5-2',
-        title: 'Towers & pumps',
-        articleIds: ['ct-01', 'pump-01'],
+        title: 'Refrigerants & the cycle revisited',
+        articleIds: ['cool-refrigerants', 'refr-01'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'A cooling tower rejects heat primarily by…',
+            prompt: 'Low-temperature refrigeration applications require refrigerants that…',
             choices: [
-              'Radiation to the sky',
-              'Evaporating a small fraction of the circulating water',
-              'Conduction through the basin',
-              'Compressing air',
+              'Boil at higher temperatures',
+              'Provide adequate capacity and pressure at low evaporating temperatures',
+              'Have a high ozone depletion potential',
+              'Cannot be compressed',
             ],
             answer: 1,
             explanation:
-              'Evaporative cooling — latent heat carried off by evaporated water — does most of the work.',
+              'Low-temperature work needs a refrigerant whose pressure-temperature curve still gives capacity below freezing.',
           },
           {
             id: 'q2',
-            kind: 'short-answer',
-            prompt:
-              'What is the name for water deliberately drained from a tower to control dissolved-solids concentration?',
-            answer: 'blowdown',
-            explanation:
-              'Blowdown (bleed) limits the build-up of dissolved solids as water evaporates.',
-          },
-          {
-            id: 'q3',
             kind: 'true-false',
-            prompt: 'Variable primary flow pumping varies chilled-water flow through the chiller itself.',
+            prompt: 'Superheat at the evaporator outlet protects the compressor from liquid slugging.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'VPF modulates flow through the evaporator within the chiller’s allowable limits, saving pump energy.',
+              'Some superheat ensures only vapour reaches the compressor, preventing damaging liquid refrigerant carryover.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'In the cycle, the refrigerant absorbs heat as it boils inside which component?',
+            answer: 'evaporator',
+            explanation:
+              'The evaporator is where low-pressure refrigerant boils and absorbs heat from the conditioned space or product.',
           },
         ],
       },
@@ -392,83 +653,85 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm6',
-    title: 'Air-Side & VRF Equipment',
-    description: 'AHUs, fan coil units and VRF/VRV systems.',
-    icon: 'Fan',
+    title: 'Heating Systems',
+    description: 'Boilers, heat pumps, hydronic and electric heating.',
+    icon: 'Flame',
     lessons: [
       {
         id: 'l6-1',
-        title: 'AHUs & FCUs',
-        articleIds: ['ahu-01', 'fcu-01'],
+        title: 'Boilers & hydronic heating',
+        articleIds: ['heat-boilers', 'heat-hydronic-heating'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'A 4-pipe fan coil system, versus a 2-pipe system, allows…',
+            prompt: 'A condensing boiler achieves higher efficiency by…',
             choices: [
-              'Only cooling',
-              'Simultaneous heating and cooling in different zones',
-              'No outdoor air',
-              'Lower equipment count always',
+              'Running at a higher flue temperature',
+              'Recovering latent heat from flue gas water vapour',
+              'Burning more fuel',
+              'Skipping the heat exchanger',
             ],
             answer: 1,
             explanation:
-              '4-pipe units have separate heating and cooling coils, so zones can call for opposite modes at once.',
+              'Condensing boilers cool flue gas below its dew point, recovering latent heat — but they need low return water temperatures.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'A mixing box blends return air with outdoor air before the AHU coils.',
+            prompt: 'Lower hot water supply temperatures improve a condensing boiler\'s efficiency.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'The mixing section combines return and outdoor air ahead of filtration and the coils.',
+              'Low return temperatures keep the boiler in condensing mode, maximising latent heat recovery.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'In a hydronic heating system, what fluid distributes heat to the terminals?',
+            answer: 'water',
+            explanation:
+              'Hydronic systems circulate hot water through pipes to radiators, coils or fan coils.',
           },
         ],
       },
       {
         id: 'l6-2',
-        title: 'VRF systems',
-        articleIds: ['vrf-01', 'vrf-02'],
+        title: 'Heat pumps & electric heating',
+        articleIds: ['heat-heat-pumps', 'heat-electric'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'VRF stands for…',
+            prompt: 'A heat pump\'s Coefficient of Performance (COP) above 1 means it…',
             choices: [
-              'Variable Refrigerant Flow',
-              'Vertical Riser Fan',
-              'Ventilation Rate Factor',
-              'Variable Resistance Filter',
+              'Wastes most of its energy',
+              'Delivers more heat energy than the electricity it consumes',
+              'Cannot provide cooling',
+              'Violates thermodynamics',
             ],
-            answer: 0,
+            answer: 1,
             explanation:
-              'VRF = Variable Refrigerant Flow; the system modulates refrigerant flow to each indoor unit.',
+              'A heat pump moves heat rather than creating it, so it delivers several times more heat than its electrical input.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'A heat-recovery VRF system can heat one zone while cooling another, moving heat between them.',
+            prompt: 'Electric resistance heating has a COP of about 1.0.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Heat-recovery VRF shifts heat from zones being cooled to zones being heated — a key efficiency gain.',
+              'Resistance heating converts electricity to heat one-for-one; a heat pump beats it by moving ambient heat.',
           },
           {
             id: 'q3',
-            kind: 'multiple-choice',
-            prompt: 'A heat-pump VRF system differs from a heat-recovery system because it…',
-            choices: [
-              'Cannot heat at all',
-              'Runs all indoor units in the same mode at a given time',
-              'Uses water instead of refrigerant',
-              'Has no outdoor unit',
-            ],
-            answer: 1,
+            kind: 'short-answer',
+            prompt: 'A reversing valve lets a heat pump switch between heating and what other mode?',
+            answer: 'cooling',
             explanation:
-              'A 2-pipe heat-pump VRF puts every connected indoor unit in heating OR cooling — not both at once.',
+              'The reversing valve swaps the roles of the indoor and outdoor coils so the same unit heats or cools.',
           },
         ],
       },
@@ -476,102 +739,119 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm7',
-    title: 'Standards & Codes',
-    description: 'Study guides for ASHRAE, SMACNA, ACCA and AHRI.',
-    icon: 'BookMarked',
+    title: 'Air Handling & Terminal Units',
+    description: 'AHUs, fan coils and VAV systems that deliver conditioned air.',
+    icon: 'Wind',
     lessons: [
       {
         id: 'l7-1',
-        title: 'ASHRAE essentials',
-        articleIds: ['std-ashrae-621', 'std-ashrae-901', 'std-ashrae-55'],
+        title: 'Air handling units',
+        articleIds: ['ahu-01', 'air-fans'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'ASHRAE Standard 62.1 primarily addresses…',
-            choices: [
-              'Energy efficiency',
-              'Ventilation for acceptable indoor air quality',
-              'Thermal comfort',
-              'Refrigerant safety',
-            ],
-            answer: 1,
+            prompt: 'Which is NOT a typical section inside an air handling unit?',
+            choices: ['Filter section', 'Cooling coil', 'Cooling tower fill', 'Supply fan'],
+            answer: 2,
             explanation:
-              'Standard 62.1 sets minimum ventilation rates and IAQ requirements for non-low-rise buildings.',
+              'An AHU contains filters, coils, fans and dampers; cooling tower fill belongs in a cooling tower.',
           },
           {
             id: 'q2',
-            kind: 'multiple-choice',
-            prompt: 'ASHRAE Standard 90.1 is the reference standard for…',
-            choices: [
-              'Building energy efficiency',
-              'Ventilation',
-              'Duct construction',
-              'Comfort',
-            ],
+            kind: 'true-false',
+            prompt: 'A backward-curved centrifugal fan is generally more efficient than a forward-curved one.',
+            choices: ['True', 'False'],
             answer: 0,
             explanation:
-              '90.1 is the energy standard for buildings except low-rise residential.',
+              'Backward-curved (and airfoil) fans have higher peak efficiency and a non-overloading power curve.',
           },
           {
             id: 'q3',
-            kind: 'multiple-choice',
-            prompt: 'ASHRAE Standard 55 defines conditions for…',
-            choices: [
-              'Acceptable thermal comfort',
-              'Refrigerant designations',
-              'Minimum ventilation',
-              'Seismic restraint',
-            ],
-            answer: 0,
+            kind: 'short-answer',
+            prompt: 'What AHU component removes dust and particulates from the airstream?',
+            answer: 'filter',
             explanation:
-              'Standard 55 specifies the combinations of conditions that occupants find thermally acceptable.',
+              'Filters protect coils and occupants by capturing particulates before air enters the space.',
           },
         ],
       },
       {
         id: 'l7-2',
-        title: 'SMACNA, ACCA & AHRI',
-        articleIds: ['std-smacna-duct', 'std-acca-manualj', 'std-ahri-550590'],
+        title: 'Fan coil units',
+        articleIds: ['fcu-01', 'ahu-01'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'SMACNA duct construction standards mainly govern…',
+            prompt: 'A 4-pipe fan coil unit differs from a 2-pipe unit because it…',
             choices: [
-              'How ductwork is built and reinforced for a given pressure class',
-              'Minimum ventilation rates',
-              'Chiller efficiency ratings',
-              'Thermal comfort',
-            ],
-            answer: 0,
-            explanation:
-              'SMACNA links gauge, reinforcement and sealing to the duct pressure class.',
-          },
-          {
-            id: 'q2',
-            kind: 'multiple-choice',
-            prompt: 'ACCA Manual J is used to…',
-            choices: [
-              'Select duct fittings',
-              'Calculate residential heating and cooling loads',
-              'Rate chillers',
-              'Design cooling towers',
+              'Has no coil',
+              'Has separate heating and cooling coils for simultaneous availability',
+              'Uses refrigerant instead of water',
+              'Cannot be controlled by a thermostat',
             ],
             answer: 1,
             explanation:
-              'Manual J is the residential load-calculation procedure; Manual S then selects equipment.',
+              'A 4-pipe FCU has dedicated hot and chilled water coils, so heating or cooling is available any time.',
           },
           {
-            id: 'q3',
+            id: 'q2',
             kind: 'true-false',
-            prompt: 'AHRI 550/590 provides a standard rating basis so chillers from different makers can be compared fairly.',
+            prompt: 'A 2-pipe fan coil system cannot heat one zone while cooling another.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'AHRI 550/590 defines rating conditions and the IPLV metric for water-chilling packages.',
+              'A 2-pipe system carries either hot or chilled water at a time, so all zones share the same mode.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Fan coil units typically need a drain to remove what liquid?',
+            answer: 'condensate',
+            explanation:
+              'The cooling coil produces condensate, which a drain pan and pipe carry away to prevent overflow.',
+          },
+        ],
+      },
+      {
+        id: 'l7-3',
+        title: 'VAV systems',
+        articleIds: ['air-vav', 'air-static-pressure'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A VAV (variable air volume) system controls space temperature by varying…',
+            choices: [
+              'Supply air temperature only',
+              'The volume of supply air delivered',
+              'The refrigerant charge',
+              'The duct material',
+            ],
+            answer: 1,
+            explanation:
+              'VAV terminals modulate airflow to each zone while supply air temperature stays roughly constant.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A VAV air handler usually pairs with a variable-speed fan to save energy at part load.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'As VAV boxes throttle down, a VSD slows the fan, cutting fan power dramatically (cube law).',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A VAV fan is commonly controlled to maintain a constant duct what?',
+            answer: 'static pressure',
+            explanation:
+              'A duct static pressure sensor signals the VSD to keep pressure at setpoint as boxes modulate.',
           },
         ],
       },
@@ -579,14 +859,594 @@ export const COURSE: CourseModule[] = [
   },
   {
     id: 'm8',
-    title: 'Controls, Commissioning & Sustainability',
-    description: 'Sequences of operation, commissioning, and green standards.',
-    icon: 'SlidersHorizontal',
+    title: 'Duct Design & Construction',
+    description: 'Sizing, fittings, construction, sealing and leakage testing.',
+    icon: 'Ruler',
     lessons: [
       {
         id: 'l8-1',
-        title: 'Controls & commissioning',
-        articleIds: ['ctrl-01', 'cx-01', 'cx-02'],
+        title: 'Sizing methods & fittings',
+        articleIds: ['duct-01', 'duct-02'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'The equal friction method sizes ducts so that each run has the same…',
+            choices: [
+              'Air velocity',
+              'Pressure loss per unit length',
+              'Cross-sectional area',
+              'Material thickness',
+            ],
+            answer: 1,
+            explanation:
+              'Equal friction holds a constant friction rate (Pa/m) along the system; static regain balances velocity pressure instead.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Duct fittings such as elbows and transitions add to total system pressure loss.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Fitting losses are real and often dominate; they are added via loss coefficients or equivalent length.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A turning vane is placed in an elbow to reduce what kind of loss?',
+            answer: 'pressure',
+            explanation:
+              'Turning vanes guide airflow around a sharp elbow, cutting turbulence and pressure loss.',
+          },
+        ],
+      },
+      {
+        id: 'l8-2',
+        title: 'Construction & sealing',
+        articleIds: ['duct-construction', 'duct-insulation'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Sheet metal gauge for a duct is selected mainly from the duct\'s size and its…',
+            choices: ['Colour', 'Operating static pressure class', 'Length only', 'Insulation type'],
+            answer: 1,
+            explanation:
+              'Higher pressure classes and larger dimensions call for thicker metal and more reinforcement.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Insulating supply ducts in unconditioned spaces reduces heat gain and prevents condensation.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Insulation limits thermal gain/loss and keeps the duct surface above dew point to avoid sweating.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Applying mastic or tape to duct joints to stop air loss is called what?',
+            answer: 'sealing',
+            explanation:
+              'Sealing joints and seams with mastic or approved tape minimises duct air leakage.',
+          },
+        ],
+      },
+      {
+        id: 'l8-3',
+        title: 'Flexible duct & leakage',
+        articleIds: ['duct-flexible', 'duct-leakage'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Flexible duct has a much higher pressure drop than rigid duct when it is…',
+            choices: [
+              'Pulled fully taut',
+              'Compressed or sagging with sharp bends',
+              'Properly supported',
+              'Kept short',
+            ],
+            answer: 1,
+            explanation:
+              'Compressed, kinked or sagging flex duct multiplies friction loss; it should be pulled taut and run straight.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A duct leakage test pressurises a duct section and measures the airflow needed to hold pressure.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Leakage testing pressurises the duct and reports leakage rate against an allowable limit.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Excessive duct leakage directly wastes conditioned air and what resource?',
+            answer: 'energy',
+            explanation:
+              'Leaked conditioned air is lost energy and fan power, and can also unbalance the system.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'm9',
+    title: 'Dampers & Air Distribution',
+    description: 'Volume, fire/smoke and balancing dampers, plus diffusers and louvers.',
+    icon: 'SlidersHorizontal',
+    lessons: [
+      {
+        id: 'l9-1',
+        title: 'Volume & balancing dampers',
+        articleIds: ['damp-vcd', 'damp-balancing'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A volume control damper is used to…',
+            choices: [
+              'Stop the spread of fire',
+              'Adjust and set the airflow rate in a duct branch',
+              'Filter the air',
+              'Reduce noise only',
+            ],
+            answer: 1,
+            explanation:
+              'Volume control dampers throttle airflow so branches can be balanced to design quantities.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Balancing dampers should be located far from diffusers to limit regenerated noise.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Throttling creates noise; placing the damper well upstream of the outlet keeps that noise out of the space.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Opposed-blade dampers give better airflow control than which other blade arrangement?',
+            answer: 'parallel',
+            explanation:
+              'Opposed-blade dampers give a more linear, predictable flow characteristic than parallel-blade dampers.',
+          },
+        ],
+      },
+      {
+        id: 'l9-2',
+        title: 'Fire & smoke dampers',
+        articleIds: ['damp-fire-smoke', 'damp-vcd'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A fire damper is installed where a duct…',
+            choices: [
+              'Changes size',
+              'Penetrates a fire-rated wall or floor',
+              'Connects to a diffuser',
+              'Turns a corner',
+            ],
+            answer: 1,
+            explanation:
+              'Fire dampers maintain the fire rating of a barrier where ductwork passes through it.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A traditional fire damper closes when a fusible link melts at a set temperature.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Heat melts the fusible link, releasing the damper blade to close; combination fire/smoke dampers also use actuators.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A smoke damper is typically commanded closed by a signal from what life-safety system?',
+            answer: 'fire alarm',
+            explanation:
+              'Smoke dampers respond to the fire alarm / smoke detection system to limit smoke migration.',
+          },
+        ],
+      },
+      {
+        id: 'l9-3',
+        title: 'Diffusers & louvers',
+        articleIds: ['air-diffusers', 'air-louvers'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'The "throw" of a diffuser describes…',
+            choices: [
+              'Its weight',
+              'The distance the supply air jet travels before slowing to a set velocity',
+              'Its fire rating',
+              'Its colour',
+            ],
+            answer: 1,
+            explanation:
+              'Throw is the distance to a terminal velocity (e.g. 0.25 m/s); it must suit the room to avoid drafts or stagnation.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'An outdoor air louver needs a low enough face velocity to limit rain and water carryover.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Excessive louver face velocity drags rain water into the intake; sizing keeps velocity below a water-penetration limit.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A bird screen on an intake louver keeps out birds and what else?',
+            answer: 'debris',
+            explanation:
+              'Screens or mesh on intake louvers exclude birds, insects and large debris from the air path.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'm10',
+    title: 'Ventilation & Kitchen Exhaust',
+    description: 'Outdoor air, exhaust, pressurisation, filtration and grease ducts.',
+    icon: 'Leaf',
+    lessons: [
+      {
+        id: 'l10-1',
+        title: 'Ventilation fundamentals',
+        articleIds: ['vent-fundamentals', 'vent-dcv'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'The main purpose of mechanical ventilation is to…',
+            choices: [
+              'Cool the building structure',
+              'Supply outdoor air to dilute indoor contaminants',
+              'Generate static pressure',
+              'Replace insulation',
+            ],
+            answer: 1,
+            explanation:
+              'Ventilation brings in outdoor air to dilute CO2, odours and pollutants, maintaining indoor air quality.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Demand controlled ventilation adjusts outdoor air based on occupancy, often using CO2 sensors.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'DCV reduces outdoor air when occupancy is low, cutting conditioning energy while keeping IAQ acceptable.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'CO2 concentration is commonly used by DCV as a proxy for what space variable?',
+            answer: 'occupancy',
+            explanation:
+              'Indoor CO2 rises with the number of people, so it is a practical indicator of occupancy for DCV.',
+          },
+        ],
+      },
+      {
+        id: 'l10-2',
+        title: 'Exhaust, pressurisation & filtration',
+        articleIds: ['vent-exhaust-systems', 'vent-pressurization', 'vent-filtration'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A toilet or smoking room is usually kept at negative pressure so that…',
+            choices: [
+              'Air flows out of the room into corridors',
+              'Odours and contaminants are contained and not spread',
+              'The room stays warmer',
+              'The exhaust fan can be smaller',
+            ],
+            answer: 1,
+            explanation:
+              'Negative pressure pulls air into the room, so odours are exhausted rather than escaping to clean areas.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A higher MERV rating means a filter captures smaller particles more effectively.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'MERV (Minimum Efficiency Reporting Value) rises with the filter\'s ability to trap fine particulates.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Keeping a clean room slightly above surrounding pressure is called positive what?',
+            answer: 'pressurization',
+            explanation:
+              'Positive pressurisation makes air leak outward, keeping contaminants from infiltrating a protected space.',
+          },
+        ],
+      },
+      {
+        id: 'l10-3',
+        title: 'Kitchen exhaust & grease ducts',
+        articleIds: ['duct-kitchen-exhaust', 'vent-exhaust-systems'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A commercial kitchen grease duct must be constructed so that it is…',
+            choices: [
+              'Made of thin flexible duct',
+              'Liquid-tight with welded seams and accessible for cleaning',
+              'Lined with fibreglass',
+              'Shared with the toilet exhaust',
+            ],
+            answer: 1,
+            explanation:
+              'Grease ducts are welded liquid-tight, sloped to drain, and fitted with access doors for grease cleaning.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A kitchen grease exhaust duct may be combined with general building exhaust to save ductwork.',
+            choices: ['True', 'False'],
+            answer: 1,
+            explanation:
+              'Grease exhaust must be a dedicated system; combining it with other exhaust is a serious fire hazard and code violation.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A kitchen hood relies on adequate replacement air, also known as what air?',
+            answer: 'make-up',
+            explanation:
+              'Make-up air replaces the large volume a kitchen hood exhausts, preventing excessive negative pressure.',
+          },
+          {
+            id: 'q4',
+            kind: 'multiple-choice',
+            prompt: 'A Type I kitchen hood is designed to capture…',
+            choices: [
+              'Only heat and steam',
+              'Grease-laden vapours and smoke from cooking',
+              'Refrigerant leaks',
+              'Dust from dry storage',
+            ],
+            answer: 1,
+            explanation:
+              'Type I hoods handle grease-laden vapour from cooking; Type II hoods handle heat and steam without grease.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'm11',
+    title: 'Piping & Hydronics',
+    description: 'Pipe sizing, pumps, expansion tanks, valves and materials.',
+    icon: 'Droplets',
+    lessons: [
+      {
+        id: 'l11-1',
+        title: 'Hydronic fundamentals & pipe sizing',
+        articleIds: ['hyd-fundamentals', 'pipe-01'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'Chilled water pipe sizing balances pump energy against…',
+            choices: [
+              'Pipe colour',
+              'First cost and acceptable velocity/pressure drop',
+              'The number of fittings only',
+              'Refrigerant charge',
+            ],
+            answer: 1,
+            explanation:
+              'Smaller pipes cost less but raise velocity, noise and pump head; sizing finds an economic balance.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Excessive water velocity in pipes can cause noise and erosion-corrosion.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'High velocity generates noise and erodes pipe walls, so design velocities are capped (often around 1.2–3 m/s).',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A closed hydronic loop carries heat between the plant and the building terminal what?',
+            answer: 'units',
+            explanation:
+              'A closed loop circulates water between central plant and terminal units such as coils and fan coils.',
+          },
+        ],
+      },
+      {
+        id: 'l11-2',
+        title: 'Pumps & selection',
+        articleIds: ['pump-01', 'pipe-pump-selection'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A pump is selected at the intersection of its pump curve and the…',
+            choices: ['System curve', 'Fan law', 'Psychrometric chart', 'Refrigerant table'],
+            answer: 0,
+            explanation:
+              'The operating point is where the pump curve crosses the system resistance curve.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Variable-speed pumping saves energy in systems with two-way control valves.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'As two-way valves close, flow drops; a VSD slows the pump and cuts pump power substantially.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'The total pressure a pump must overcome is called the system or pump what?',
+            answer: 'head',
+            explanation:
+              'Pump head is the energy per unit weight the pump adds, sized to overcome system resistance.',
+          },
+        ],
+      },
+      {
+        id: 'l11-3',
+        title: 'Expansion, valves & materials',
+        articleIds: ['pipe-expansion', 'pipe-valves', 'pipe-materials'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'An expansion tank in a hydronic system is needed because…',
+            choices: [
+              'Water is incompressible and expands when heated',
+              'Pumps need extra storage',
+              'It filters the water',
+              'It generates head',
+            ],
+            answer: 0,
+            explanation:
+              'Water expands as it heats; the expansion tank accommodates that volume change and controls system pressure.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'A balancing valve is used to set the design flow rate through a branch or coil.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Balancing valves add measured resistance so each circuit receives its intended flow.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Air separators are installed to remove what unwanted substance from the loop?',
+            answer: 'air',
+            explanation:
+              'Air separators remove entrained air that would otherwise cause noise, corrosion and poor heat transfer.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'm12',
+    title: 'Condenser Water & Piping Systems',
+    description: 'Condenser water loops and complete piping system design.',
+    icon: 'Gauge',
+    lessons: [
+      {
+        id: 'l12-1',
+        title: 'Condenser water systems',
+        articleIds: ['pipe-condenser-water', 'ct-01'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'The condenser water loop in a water-cooled plant connects the chiller condenser to the…',
+            choices: ['Air handler', 'Cooling tower', 'Boiler', 'Expansion tank'],
+            answer: 1,
+            explanation:
+              'Condenser water carries rejected heat from the chiller condenser up to the cooling tower.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Condenser water is an open loop exposed to the atmosphere at the cooling tower.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'The tower is open to air, so the condenser loop is an open system needing water treatment against scale and biofouling.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Open condenser water loops require chemical treatment to prevent scale and what biological growth?',
+            answer: 'algae',
+            explanation:
+              'Open tower water needs treatment against scale, corrosion and biological growth such as algae and Legionella.',
+          },
+        ],
+      },
+      {
+        id: 'l12-2',
+        title: 'Pumping arrangements & materials',
+        articleIds: ['pump-01', 'pipe-materials', 'hyd-fundamentals'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'A common pipe material for chilled water inside a building is…',
+            choices: ['Cast iron only', 'Steel or copper with appropriate insulation', 'PVC fire-rated duct', 'Galvanised sheet metal'],
+            answer: 1,
+            explanation:
+              'Black or galvanised steel and copper are common chilled water materials, insulated to prevent condensation.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'In a primary-secondary loop, dedicated primary pumps maintain constant flow through each chiller.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Primary pumps give chillers steady flow; secondary (distribution) pumps vary with building load.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Chilled water pipe insulation must include a vapour barrier to stop what?',
+            answer: 'condensation',
+            explanation:
+              'A vapour barrier keeps humid air from reaching the cold pipe surface and condensing inside the insulation.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'm13',
+    title: 'Controls, Commissioning & Standards',
+    description: 'Sequences, BMS, TAB, commissioning, codes and sustainability.',
+    icon: 'BookMarked',
+    lessons: [
+      {
+        id: 'l13-1',
+        title: 'Sequences & BMS',
+        articleIds: ['ctrl-01', 'ctrl-bms'],
         xp: 20,
         quiz: [
           {
@@ -594,131 +1454,292 @@ export const COURSE: CourseModule[] = [
             kind: 'multiple-choice',
             prompt: 'A sequence of operation describes…',
             choices: [
-              'The order to install ductwork',
-              'How a control system should respond to conditions and setpoints',
-              'A chiller’s warranty terms',
-              'The refrigerant charging steps',
+              'The order ducts are installed',
+              'How a system\'s controls behave under all operating conditions',
+              'The paint specification',
+              'The warranty terms',
             ],
             answer: 1,
             explanation:
-              'A sequence of operation is the written logic the BMS follows to run the equipment.',
+              'A sequence of operation defines control logic — setpoints, modes and responses — for the whole system.',
           },
           {
             id: 'q2',
-            kind: 'multiple-choice',
-            prompt: 'Retro-commissioning is best described as…',
-            choices: [
-              'Commissioning a brand-new building',
-              'Commissioning an existing building that was never formally commissioned',
-              'Replacing all equipment',
-              'A warranty inspection',
-            ],
-            answer: 1,
-            explanation:
-              'Retro-commissioning applies the commissioning process to an existing building for the first time.',
-          },
-          {
-            id: 'q3',
             kind: 'true-false',
-            prompt: 'Functional performance testing verifies equipment behaves correctly across its operating modes.',
+            prompt: 'BACnet is a common open communication protocol used in building management systems.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'FPT exercises the system through its sequences to confirm real performance, not just installation.',
+              'BACnet is a widely used open protocol allowing controllers and devices from different vendors to interoperate.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'A field device that measures temperature for the BMS is called a what?',
+            answer: 'sensor',
+            explanation:
+              'Sensors feed measured values (temperature, pressure, CO2) to BMS controllers, which act through actuators.',
           },
         ],
       },
       {
-        id: 'l8-2',
-        title: 'Energy & sustainability',
-        articleIds: ['edge-01', 'kig-01'],
+        id: 'l13-2',
+        title: 'Commissioning & balancing',
+        articleIds: ['cx-01', 'cx-02', 'ctrl-tab'],
         xp: 20,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'IFC EDGE certification is notable in Africa because it…',
+            prompt: 'Commissioning is the process of verifying that systems…',
             choices: [
-              'Requires imported equipment only',
-              'Offers a streamlined, resource-efficiency standard suited to emerging markets',
-              'Bans air conditioning',
-              'Applies only to factories',
+              'Are the cheapest available',
+              'Are installed and perform per the design intent',
+              'Are painted correctly',
+              'Use the most refrigerant',
             ],
             answer: 1,
             explanation:
-              'EDGE targets a 20% reduction in energy, water and embodied materials, with a fast, accessible process.',
+              'Commissioning confirms systems are installed, started and operate as the design intended.',
           },
           {
             id: 'q2',
             kind: 'true-false',
-            prompt: 'The Kigali Amendment phases down high-GWP HFC refrigerants.',
+            prompt: 'Functional performance testing checks that equipment responds correctly across its sequences.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Kigali amends the Montreal Protocol to phase down HFCs because of their high global-warming potential.',
+              'FPT exercises systems through their modes and verifies the controls respond as specified.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'TAB stands for testing, adjusting and what?',
+            answer: 'balancing',
+            explanation:
+              'Testing, Adjusting and Balancing sets air and water flows to the design quantities.',
+          },
+        ],
+      },
+      {
+        id: 'l13-3',
+        title: 'Standards & codes',
+        articleIds: ['std-ashrae-621', 'std-ashrae-901', 'std-ashrae-55'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'ASHRAE Standard 62.1 sets minimum requirements for…',
+            choices: ['Energy efficiency', 'Ventilation for acceptable indoor air quality', 'Duct construction', 'Pipe sizing'],
+            answer: 1,
+            explanation:
+              'ASHRAE 62.1 prescribes ventilation rates and IAQ requirements for commercial buildings.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'ASHRAE Standard 90.1 is an energy standard for buildings.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'ASHRAE 90.1 sets minimum energy efficiency requirements for building envelope, HVAC and lighting.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'ASHRAE Standard 55 defines acceptable thermal what for occupants?',
+            answer: 'comfort',
+            explanation:
+              'ASHRAE 55 defines the thermal comfort conditions (temperature, humidity, air speed) acceptable to occupants.',
+          },
+        ],
+      },
+      {
+        id: 'l13-4',
+        title: 'Codes & sustainability',
+        articleIds: ['std-smacna-duct', 'std-acca-manualj', 'std-ahri-550590'],
+        xp: 20,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'SMACNA standards are best known for guidance on…',
+            choices: ['Refrigerant charging', 'Sheet metal and duct construction', 'Pump curves', 'Thermal comfort'],
+            answer: 1,
+            explanation:
+              'SMACNA publishes the industry duct construction standards (gauges, reinforcement, sealing classes).',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'ACCA Manual J is a residential load calculation procedure.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'Manual J is the standard residential heating and cooling load calculation method.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'AHRI Standard 550/590 governs the performance rating of which central equipment?',
+            answer: 'chiller',
+            explanation:
+              'AHRI 550/590 is the rating standard for water-chilling and heat-pump water-heating packages (chillers).',
           },
         ],
       },
     ],
   },
   {
-    id: 'capstone',
-    title: 'Capstone: Cold Room Design',
-    description: 'Apply the whole course to a cold-storage design challenge.',
-    icon: 'Snowflake',
+    id: 'm14',
+    title: 'Capstone: Whole-System Design',
+    description: 'Mechanical codes, sustainability and a full integrated design challenge.',
+    icon: 'Building2',
     capstone: true,
     lessons: [
       {
         id: 'cap-1',
-        title: 'Cold room design challenge',
-        articleIds: ['cold-01'],
-        xp: 50,
+        title: 'Codes & low-GWP transition',
+        articleIds: ['std-imc', 'std-nfpa96', 'kig-01'],
+        xp: 60,
         quiz: [
           {
             id: 'q1',
             kind: 'multiple-choice',
-            prompt: 'Which is NOT one of the main cold-room load components?',
+            prompt: 'The International Mechanical Code (IMC) is best described as…',
             choices: [
-              'Transmission load through walls/roof/floor',
-              'Product (pull-down) load',
-              'Infiltration and internal loads',
-              'Solar gain on the psychrometric chart’s saturation line',
-            ],
-            answer: 3,
-            explanation:
-              'Cold-room load is transmission + product + infiltration + internal (people, lights, motors, defrost).',
-          },
-          {
-            id: 'q2',
-            kind: 'multiple-choice',
-            prompt: 'Product pull-down load depends mainly on…',
-            choices: [
-              'The colour of the door',
-              'Product mass, specific heat, and the temperature change required',
-              'The brand of compressor',
-              'Ambient wind speed',
+              'A voluntary efficiency guideline',
+              'A model code adopted and enforced for mechanical system installation',
+              'A refrigerant data sheet',
+              'A fan selection chart',
             ],
             answer: 1,
             explanation:
-              'Pull-down load = mass × specific heat × temperature change (plus latent heat if freezing).',
+              'The IMC is a model code that jurisdictions adopt to regulate the design and installation of mechanical systems.',
           },
           {
-            id: 'q3',
+            id: 'q2',
             kind: 'true-false',
-            prompt: 'A safety/diversity factor is typically added before final refrigeration equipment selection.',
+            prompt: 'NFPA 96 governs ventilation control and fire protection of commercial cooking operations.',
             choices: ['True', 'False'],
             answer: 0,
             explanation:
-              'Designers add a margin (often ~10%) and account for run-time hours before selecting equipment.',
+              'NFPA 96 covers commercial kitchen exhaust — hoods, grease ducts, fans and fire suppression.',
+          },
+          {
+            id: 'q3',
+            kind: 'multiple-choice',
+            prompt: 'The Kigali Amendment commits countries to phasing down…',
+            choices: [
+              'Ozone-depleting CFCs',
+              'High-GWP hydrofluorocarbon (HFC) refrigerants',
+              'Natural refrigerants',
+              'Electric heating',
+            ],
+            answer: 1,
+            explanation:
+              'The Kigali Amendment to the Montreal Protocol schedules the global phase-down of high-GWP HFCs.',
           },
           {
             id: 'q4',
             kind: 'short-answer',
-            prompt:
-              'In Accra’s climate, which load component grows the most versus a temperate location each time the door opens?',
-            answer: 'infiltration',
+            prompt: 'A kitchen grease duct must comply with which fire standard discussed in this lesson?',
+            answer: 'nfpa 96',
             explanation:
-              'Hot, humid outdoor air makes door-opening infiltration (sensible + latent) a large, climate-driven load.',
+              'NFPA 96 sets the construction, clearance and cleaning requirements for grease exhaust systems.',
+          },
+        ],
+      },
+      {
+        id: 'cap-2',
+        title: 'Sustainability & efficiency',
+        articleIds: ['edge-01', 'sust-efficiency'],
+        xp: 60,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'IFC EDGE is a green building certification that focuses on…',
+            choices: [
+              'Aesthetics only',
+              'Resource efficiency in energy, water and materials',
+              'Refrigerant colour coding',
+              'Duct gauge selection',
+            ],
+            answer: 1,
+            explanation:
+              'EDGE certifies measurable savings in energy, water and embodied materials, popular in emerging markets.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Variable-speed drives on fans and pumps are a common HVAC energy efficiency measure.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'VSDs cut fan and pump energy sharply at part load because power varies with the cube of speed.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'Right-sizing equipment to an accurate load avoids the energy penalty of doing what?',
+            answer: 'oversizing',
+            explanation:
+              'Oversized equipment short-cycles, dehumidifies poorly and wastes energy; an accurate load avoids it.',
+          },
+        ],
+      },
+      {
+        id: 'cap-3',
+        title: 'Integrated design challenge',
+        articleIds: ['load-overview', 'air-static-pressure', 'damp-balancing'],
+        xp: 60,
+        quiz: [
+          {
+            id: 'q1',
+            kind: 'multiple-choice',
+            prompt: 'You are designing an office HVAC system. What is the correct first step?',
+            choices: [
+              'Order the diffusers',
+              'Perform a cooling and heating load calculation',
+              'Pour the equipment plinths',
+              'Select the duct insulation colour',
+            ],
+            answer: 1,
+            explanation:
+              'Everything downstream — equipment, ducts, pipes — depends on a correct load calculation done first.',
+          },
+          {
+            id: 'q2',
+            kind: 'true-false',
+            prompt: 'Fan selection requires the system total external static pressure derived from duct and fitting losses.',
+            choices: ['True', 'False'],
+            answer: 0,
+            explanation:
+              'You sum duct friction, fittings, coils, filters and dampers to get the static pressure the fan must deliver.',
+          },
+          {
+            id: 'q3',
+            kind: 'short-answer',
+            prompt: 'The final field step that sets each branch to its design airflow using dampers is called what?',
+            answer: 'balancing',
+            explanation:
+              'Air balancing adjusts volume dampers so every zone receives its design airflow, completing the installation.',
+          },
+          {
+            id: 'q4',
+            kind: 'multiple-choice',
+            prompt: 'A space feels cool but humid and clammy. The most likely design error is…',
+            choices: [
+              'Undersized ductwork',
+              'Oversized cooling equipment that short-cycles',
+              'Too much insulation',
+              'A missing balancing damper',
+            ],
+            answer: 1,
+            explanation:
+              'Oversized cooling satisfies the thermostat fast and runs too briefly to remove latent load, leaving the space humid.',
           },
         ],
       },
