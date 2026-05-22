@@ -3,6 +3,7 @@ import { Menu, Search, Settings, Moon, Sun } from 'lucide-react';
 import { Logo } from './Logo';
 import { SearchBar } from './SearchBar';
 import { ModeSwitcher } from './ModeSwitcher';
+import { InstallButton } from './InstallButton';
 import { useUIStore } from '../store/useUIStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 
@@ -48,6 +49,8 @@ export function TopBar({ showMenu = true }: Props) {
         </button>
 
         <ModeSwitcher />
+
+        <InstallButton />
 
         <button
           onClick={toggleTheme}
