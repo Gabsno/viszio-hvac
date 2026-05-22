@@ -6,6 +6,7 @@ import { UpdateBanner } from './components/UpdateBanner';
 import { SearchOverlay } from './components/SearchOverlay';
 import { AITutorPanel } from './components/AITutorPanel';
 import { AccessGate } from './components/AccessGate';
+import { RevocationGate } from './components/RevocationGate';
 import { HomePage } from './pages/HomePage';
 import { LibraryPage } from './pages/LibraryPage';
 import { ArticlePage } from './pages/ArticlePage';
@@ -38,8 +39,9 @@ export default function App() {
   }, [fontSize, readingMode]);
 
   return (
-    <AccessGate>
-      <Routes>
+    <RevocationGate>
+      <AccessGate>
+        <Routes>
         <Route element={<LibraryLayout />}>
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/article/:id" element={<ArticlePage />} />
@@ -60,10 +62,11 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Global overlays */}
-      <UpdateBanner />
-      <SearchOverlay />
-      <AITutorPanel />
-    </AccessGate>
+        {/* Global overlays */}
+        <UpdateBanner />
+        <SearchOverlay />
+        <AITutorPanel />
+      </AccessGate>
+    </RevocationGate>
   );
 }
