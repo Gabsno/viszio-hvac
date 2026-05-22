@@ -1,7 +1,7 @@
 ---
 id: fcu-01
 title: "Fan coil units 2 pipe versus 4 pipe systems"
-pillar: equipment
+pillar: ducting
 topic: fan-coil-units
 order: 1
 difficulty: beginner

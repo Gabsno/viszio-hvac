@@ -1,7 +1,7 @@
 ---
 id: psy-01
 title: "What is psychrometrics and why it is the foundation of HVAC"
-pillar: core-engineering
+pillar: fundamentals
 topic: psychrometrics
 order: 1
 difficulty: beginner

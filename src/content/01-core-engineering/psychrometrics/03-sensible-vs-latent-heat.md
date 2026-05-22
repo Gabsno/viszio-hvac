@@ -1,7 +1,7 @@
 ---
 id: psy-03
 title: "Sensible vs latent heat in HVAC"
-pillar: core-engineering
+pillar: fundamentals
 topic: psychrometrics
 order: 3
 difficulty: beginner

@@ -11,6 +11,9 @@ import {
   Wrench,
   Building2,
   Ruler,
+  Flame,
+  Droplets,
+  Calculator,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -29,6 +32,9 @@ const ICONS: Record<string, LucideIcon> = {
   Wrench,
   Building2,
   Ruler,
+  Flame,
+  Droplets,
+  Calculator,
 };
 
 interface Props {

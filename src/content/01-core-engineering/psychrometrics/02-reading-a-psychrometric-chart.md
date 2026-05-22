@@ -1,7 +1,7 @@
 ---
 id: psy-02
 title: "Reading a psychrometric chart step by step"
-pillar: core-engineering
+pillar: fundamentals
 topic: psychrometrics
 order: 2
 difficulty: beginner

@@ -1,7 +1,7 @@
 ---
 id: psy-04
 title: "The four basic HVAC processes on the chart"
-pillar: core-engineering
+pillar: fundamentals
 topic: psychrometrics
 order: 4
 difficulty: intermediate

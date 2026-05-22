@@ -1,7 +1,7 @@
 ---
 id: edge-01
 title: "IFC EDGE certification what it is and why it matters for Africa"
-pillar: energy-iaq-sustainability
+pillar: sustainability
 topic: edge
 order: 1
 difficulty: beginner

@@ -1,7 +1,7 @@
 ---
 id: refr-01
 title: "The vapor compression refrigeration cycle explained"
-pillar: core-engineering
+pillar: fundamentals
 topic: refrigeration-cycle
 order: 1
 difficulty: beginner

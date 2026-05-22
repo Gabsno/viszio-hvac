@@ -1,7 +1,7 @@
 ---
 id: cx-01
 title: "Commissioning retro commissioning and continuous commissioning"
-pillar: controls-bms-commissioning
+pillar: controls
 topic: commissioning
 order: 1
 difficulty: intermediate

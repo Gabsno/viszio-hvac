@@ -1,7 +1,7 @@
 ---
 id: vrf-01
 title: "VRF and VRV systems architecture and how they work"
-pillar: equipment
+pillar: cooling
 topic: vrf-vrv
 order: 1
 difficulty: beginner

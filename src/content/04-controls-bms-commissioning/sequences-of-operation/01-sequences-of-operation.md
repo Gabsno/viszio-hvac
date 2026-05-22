@@ -1,7 +1,7 @@
 ---
 id: ctrl-01
 title: "Sequences of operation how they are written and read"
-pillar: controls-bms-commissioning
+pillar: controls
 topic: sequences-of-operation
 order: 1
 difficulty: intermediate

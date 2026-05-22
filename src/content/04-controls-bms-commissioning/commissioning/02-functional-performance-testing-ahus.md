@@ -1,7 +1,7 @@
 ---
 id: cx-02
 title: "Functional performance testing for air handling units"
-pillar: controls-bms-commissioning
+pillar: controls
 topic: commissioning
 order: 2
 difficulty: advanced

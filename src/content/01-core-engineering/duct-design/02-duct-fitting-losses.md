@@ -1,7 +1,7 @@
 ---
 id: duct-02
 title: "Duct fitting losses and dynamic loss coefficients"
-pillar: core-engineering
+pillar: ducting
 topic: duct-design
 order: 2
 difficulty: intermediate

@@ -1,7 +1,7 @@
 ---
 id: ct-01
 title: "Cooling towers open versus closed circuit"
-pillar: equipment
+pillar: cooling
 topic: cooling-towers
 order: 1
 difficulty: intermediate

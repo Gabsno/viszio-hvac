@@ -1,8 +1,8 @@
 ---
 id: load-01
 title: "Cooling load calculation the CLTD method"
-pillar: core-engineering
-topic: load-calculations
+pillar: load-calculations
+topic: load-methods
 order: 1
 difficulty: intermediate
 tier: pro

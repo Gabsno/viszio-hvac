@@ -1,7 +1,7 @@
 ---
 id: cold-01
 title: "Cold room design fundamentals loads and equipment selection"
-pillar: refrigeration-low-temp
+pillar: cooling
 topic: cold-rooms
 order: 1
 difficulty: advanced

@@ -1,8 +1,8 @@
 ---
 id: pump-01
 title: "Pumps primary secondary and variable primary flow"
-pillar: equipment
-topic: pumps-and-fans
+pillar: piping
+topic: pumps
 order: 1
 difficulty: intermediate
 tier: pro

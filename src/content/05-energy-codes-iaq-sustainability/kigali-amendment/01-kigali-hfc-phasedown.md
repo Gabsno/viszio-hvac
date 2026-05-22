@@ -1,7 +1,7 @@
 ---
 id: kig-01
 title: "The Kigali Amendment and the HFC phase down"
-pillar: energy-iaq-sustainability
+pillar: sustainability
 topic: kigali-amendment
 order: 1
 difficulty: beginner

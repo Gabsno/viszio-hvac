@@ -1,7 +1,7 @@
 ---
 id: chil-01
 title: "Air cooled versus water cooled chillers selection criteria"
-pillar: equipment
+pillar: cooling
 topic: chillers
 order: 1
 difficulty: intermediate

@@ -1,7 +1,7 @@
 ---
 id: duct-01
 title: "Duct sizing equal friction versus static regain"
-pillar: core-engineering
+pillar: ducting
 topic: duct-design
 order: 1
 difficulty: intermediate

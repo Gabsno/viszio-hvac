@@ -1,7 +1,7 @@
 ---
 id: chil-02
 title: "Chiller types scroll screw centrifugal and absorption"
-pillar: equipment
+pillar: cooling
 topic: chillers
 order: 2
 difficulty: intermediate

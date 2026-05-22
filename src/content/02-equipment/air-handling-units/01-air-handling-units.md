@@ -1,7 +1,7 @@
 ---
 id: ahu-01
 title: "Air handling units components and configurations"
-pillar: equipment
+pillar: ducting
 topic: air-handling-units
 order: 1
 difficulty: beginner

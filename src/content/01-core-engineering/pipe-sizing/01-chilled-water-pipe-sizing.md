@@ -1,7 +1,7 @@
 ---
 id: pipe-01
 title: "Pipe sizing for chilled water systems"
-pillar: core-engineering
+pillar: piping
 topic: pipe-sizing
 order: 1
 difficulty: intermediate

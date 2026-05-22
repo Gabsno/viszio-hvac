@@ -1,8 +1,8 @@
 ---
 id: load-02
 title: "Cooling load calculation the radiant time series method"
-pillar: core-engineering
-topic: load-calculations
+pillar: load-calculations
+topic: load-methods
 order: 2
 difficulty: advanced
 tier: pro

@@ -1,7 +1,7 @@
 ---
 id: vrf-02
 title: "VRF heat recovery versus heat pump systems"
-pillar: equipment
+pillar: cooling
 topic: vrf-vrv
 order: 2
 difficulty: intermediate
