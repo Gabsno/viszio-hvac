@@ -9,13 +9,19 @@ import {
   EyeOff,
   CheckCircle2,
   Accessibility,
+  Shield,
 } from 'lucide-react';
 import type { FontSize, ReadingMode } from '../store/useSettingsStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useUserStore } from '../store/useUserStore';
 import { BUILD_INFO } from '../lib/version';
-import { APP_NAME, SUPPORT_EMAIL, SAAS_MODE_ENABLED } from '../config';
+import {
+  APP_NAME,
+  SUPPORT_EMAIL,
+  SAAS_MODE_ENABLED,
+  ANALYTICS,
+} from '../config';
 
 function Section({
   icon,
@@ -304,6 +310,20 @@ export function SettingsPage() {
             Reset course progress
           </button>
         )}
+      </Section>
+
+      {/* Privacy */}
+      <Section icon={<Shield size={15} />} title="Privacy">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Your bookmarks, notes, course progress and settings are stored only
+          on this device. They are never uploaded, and the Viszio HVAC team
+          cannot see them.
+        </p>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          {ANALYTICS.enabled
+            ? 'Anonymous, cookieless usage statistics — which pages are viewed — are collected to understand which content is most useful. No personal data, no accounts, and never your private notes.'
+            : 'No usage tracking is currently active.'}
+        </p>
       </Section>
 
       {/* About */}

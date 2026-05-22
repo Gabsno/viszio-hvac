@@ -23,6 +23,28 @@ export const ACCESS_GATE_ENABLED = true;
 export const ACCESS_CODE_HASH =
   '52046c72e54f0daa329426950f6d54aa23ba2069c8092e83105b1ea6309ca860';
 
+// --- Usage analytics ------------------------------------------------------
+// Anonymous, cookieless, aggregate page-view analytics — it shows which
+// articles and tools are read, visitor counts, devices and countries. It
+// records NO personal data, NO accounts, and NEVER the users' private notes.
+//
+// Disabled until configured. To switch it on:
+//   1. Create a free account with the chosen provider:
+//      - GoatCounter — https://www.goatcounter.com (free, cookieless)
+//      - Plausible   — https://plausible.io (paid, privacy-first)
+//   2. Set `enabled: true` and `site` below, then commit and push.
+// For GoatCounter, `site` is your code (e.g. 'viszio' for viszio.goatcounter.com).
+// For Plausible, `site` is the domain (e.g. 'gabsno.github.io').
+export const ANALYTICS: {
+  enabled: boolean;
+  provider: 'goatcounter' | 'plausible';
+  site: string;
+} = {
+  enabled: false,
+  provider: 'goatcounter',
+  site: '',
+};
+
 export const APP_NAME = 'Viszio HVAC';
 export const APP_TAGLINE = 'HVAC engineering, made learnable.';
 export const SUPPORT_EMAIL = 'visziogh@gmail.com';

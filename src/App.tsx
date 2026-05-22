@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LibraryLayout } from './components/LibraryLayout';
 import { PlainLayout } from './components/PlainLayout';
 import { UpdateBanner } from './components/UpdateBanner';
@@ -21,6 +21,7 @@ import { FlashcardsPage } from './pages/FlashcardsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LoginPage } from './pages/LoginPage';
 import { useSettingsStore } from './store/useSettingsStore';
+import { initAnalytics, trackPage } from './lib/analytics';
 
 export default function App() {
   const theme = useSettingsStore((s) => s.theme);
@@ -37,6 +38,15 @@ export default function App() {
     document.documentElement.dataset.fontSize = fontSize;
     document.documentElement.dataset.readingMode = readingMode;
   }, [fontSize, readingMode]);
+
+  // Anonymous usage analytics — dormant unless configured in config.ts.
+  const location = useLocation();
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPage(location.pathname + location.search);
+  }, [location.pathname, location.search]);
 
   return (
     <RevocationGate>
