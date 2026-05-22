@@ -21,7 +21,7 @@ export const SAAS_MODE_ENABLED = false;
 // then paste the printed hash into ACCESS_CODE_HASH below.
 export const ACCESS_GATE_ENABLED = true;
 export const ACCESS_CODE_HASH =
-  '52046c72e54f0daa329426950f6d54aa23ba2069c8092e83105b1ea6309ca860';
+  '00c2025e12343c7719622af6555d843571afc0d0e083ac3e14dd86e45ad10b4a';
 
 // --- Usage analytics ------------------------------------------------------
 // Anonymous, cookieless, aggregate page-view analytics — it shows which
