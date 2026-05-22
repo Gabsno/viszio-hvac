@@ -40,9 +40,9 @@ export const ANALYTICS: {
   provider: 'goatcounter' | 'plausible';
   site: string;
 } = {
-  enabled: false,
+  enabled: true,
   provider: 'goatcounter',
-  site: '',
+  site: 'viszio',
 };
 
 export const APP_NAME = 'Viszio HVAC';
