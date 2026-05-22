@@ -5,6 +5,7 @@ import { PlainLayout } from './components/PlainLayout';
 import { UpdateBanner } from './components/UpdateBanner';
 import { SearchOverlay } from './components/SearchOverlay';
 import { AITutorPanel } from './components/AITutorPanel';
+import { AccessGate } from './components/AccessGate';
 import { HomePage } from './pages/HomePage';
 import { LibraryPage } from './pages/LibraryPage';
 import { ArticlePage } from './pages/ArticlePage';
@@ -37,7 +38,7 @@ export default function App() {
   }, [fontSize, readingMode]);
 
   return (
-    <>
+    <AccessGate>
       <Routes>
         <Route element={<LibraryLayout />}>
           <Route path="/library" element={<LibraryPage />} />
@@ -63,6 +64,6 @@ export default function App() {
       <UpdateBanner />
       <SearchOverlay />
       <AITutorPanel />
-    </>
+    </AccessGate>
   );
 }
