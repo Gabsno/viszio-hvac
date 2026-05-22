@@ -11,6 +11,8 @@ export interface VersionInfo {
   message?: string;
   /** Optional URL to send users to (e.g. the new SaaS app). */
   newUrl?: string;
+  /** When true, a revoke also erases the user's on-device data. */
+  wipe?: boolean;
 }
 
 /** Fetch the deployed version.json (cache-busted, never from the SW cache). */
@@ -40,15 +42,19 @@ export function isRevoked(deployed: VersionInfo | null): boolean {
 }
 
 /**
- * Wipe this copy of the app from the device — clears saved data, deletes the
- * offline cache, and unregisters the service worker. Used by the kill switch.
+ * Retire this copy of the app from the device — deletes the offline cache and
+ * unregisters the service worker, so the app stops working offline. When
+ * `wipeData` is true it also clears the user's saved data (notes, bookmarks,
+ * progress); otherwise that data is left untouched. Used by the kill switch.
  * Best-effort: each step is guarded so a failure does not block the others.
  */
-export async function lockdown(): Promise<void> {
-  try {
-    localStorage.clear();
-  } catch {
-    /* ignore */
+export async function lockdown(wipeData = false): Promise<void> {
+  if (wipeData) {
+    try {
+      localStorage.clear();
+    } catch {
+      /* ignore */
+    }
   }
   try {
     if ('caches' in window) {

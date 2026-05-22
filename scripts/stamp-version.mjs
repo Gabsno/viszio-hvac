@@ -10,8 +10,12 @@
 //   1. Edit public/version.json — set "status": "revoked"
 //      (optionally set "message" and "newUrl" to point users to the new app).
 //   2. Commit and push. On next online launch every copy locks itself,
-//      clears its cached data, and shows the retired screen.
+//      removes its offline copy, and shows the retired screen.
 //   To bring it back, set "status" to "active".
+//
+// By default a revoke KEEPS each user's on-device data (notes, progress).
+// To also erase that data, set "wipe": true — use this only for a permanent
+// shutdown, never for a pause or migration.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -40,6 +44,7 @@ const versionInfo = {
   status: prev.status === 'revoked' ? 'revoked' : 'active',
   message: typeof prev.message === 'string' ? prev.message : '',
   newUrl: typeof prev.newUrl === 'string' ? prev.newUrl : '',
+  wipe: prev.wipe === true,
 };
 
 writeFileSync(versionPath, JSON.stringify(versionInfo, null, 2) + '\n');

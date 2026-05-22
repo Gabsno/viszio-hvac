@@ -27,7 +27,7 @@ export function RevocationGate({ children }: { children: ReactNode }) {
       if (cancelled || handled.current || !isRevoked(v)) return;
       handled.current = true;
       setRevoked({ message: v?.message ?? '', newUrl: v?.newUrl ?? '' });
-      await lockdown();
+      await lockdown(v?.wipe === true);
     }
     check();
     const timer = setInterval(check, VERSION_CHECK_INTERVAL);

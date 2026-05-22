@@ -1,8 +1,9 @@
 {
   "version": "1.0.0",
-  "buildHash": "02b4406a976f",
-  "builtAt": "2026-05-22T14:21:10.410Z",
+  "buildHash": "16d954269872",
+  "builtAt": "2026-05-22T14:42:02.087Z",
   "status": "active",
   "message": "",
-  "newUrl": ""
+  "newUrl": "",
+  "wipe": false
 }
