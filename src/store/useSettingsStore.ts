@@ -4,6 +4,7 @@ import type { AIProvider } from '../lib/ai';
 
 export type FontSize = 'small' | 'normal' | 'large' | 'xlarge';
 export type ReadingMode = 'default' | 'high-contrast' | 'dyslexia';
+export type UnitSystem = 'SI' | 'IP';
 
 interface SettingsState {
   aiProvider: AIProvider;
@@ -13,6 +14,7 @@ interface SettingsState {
   fontSize: FontSize;
   readingMode: ReadingMode;
   userName: string;
+  calcUnits: UnitSystem;
   setProvider: (p: AIProvider) => void;
   setGeminiKey: (k: string) => void;
   setClaudeKey: (k: string) => void;
@@ -21,6 +23,7 @@ interface SettingsState {
   setFontSize: (s: FontSize) => void;
   setReadingMode: (m: ReadingMode) => void;
   setUserName: (n: string) => void;
+  setCalcUnits: (u: UnitSystem) => void;
   activeKey: () => string;
 }
 
@@ -34,6 +37,7 @@ export const useSettingsStore = create<SettingsState>()(
       fontSize: 'normal',
       readingMode: 'default',
       userName: '',
+      calcUnits: 'SI',
       setProvider: (aiProvider) => set({ aiProvider }),
       setGeminiKey: (geminiKey) => set({ geminiKey }),
       setClaudeKey: (claudeKey) => set({ claudeKey }),
@@ -43,6 +47,7 @@ export const useSettingsStore = create<SettingsState>()(
       setFontSize: (fontSize) => set({ fontSize }),
       setReadingMode: (readingMode) => set({ readingMode }),
       setUserName: (userName) => set({ userName }),
+      setCalcUnits: (calcUnits) => set({ calcUnits }),
       activeKey: () => {
         const s = get();
         return s.aiProvider === 'gemini' ? s.geminiKey : s.claudeKey;
