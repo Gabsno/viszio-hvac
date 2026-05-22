@@ -16,6 +16,7 @@ import {
   Square,
 } from 'lucide-react';
 import { ARTICLES, getArticle, extractToc, toPlainText } from '../lib/content';
+import { trackEvent } from '../lib/analytics';
 import { DifficultyBadge, TierBadge, RegionBadge } from '../components/Badges';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { TableOfContents } from '../components/TableOfContents';
@@ -75,6 +76,7 @@ export function ArticlePage() {
     synth.cancel();
     synth.speak(utter);
     setSpeaking(true);
+    trackEvent('read-aloud');
   }
 
   // Debounced note persistence.
@@ -144,7 +146,10 @@ export function ArticlePage() {
         {/* Action bar */}
         <div className="no-print mt-4 flex flex-wrap gap-2">
           <button
-            onClick={() => toggleBookmark(article.id)}
+            onClick={() => {
+              if (!isBookmarked) trackEvent('bookmark-added');
+              toggleBookmark(article.id);
+            }}
             className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
               isBookmarked
                 ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
@@ -160,7 +165,14 @@ export function ArticlePage() {
           </button>
 
           <button
-            onClick={() => (isRead ? unmarkRead(article.id) : markRead(article.id))}
+            onClick={() => {
+              if (isRead) {
+                unmarkRead(article.id);
+              } else {
+                markRead(article.id);
+                trackEvent('article-marked-read');
+              }
+            }}
             className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
               isRead
                 ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
@@ -202,7 +214,10 @@ export function ArticlePage() {
           </button>
 
           <button
-            onClick={() => window.print()}
+            onClick={() => {
+              trackEvent('pdf-export');
+              window.print();
+            }}
             className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
           >
             <Printer size={15} /> Save PDF

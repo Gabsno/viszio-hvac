@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Lock, KeyRound } from 'lucide-react';
 import { ACCESS_GATE_ENABLED, ACCESS_CODE_HASH, APP_NAME } from '../config';
+import { trackEvent } from '../lib/analytics';
 
 const STORAGE_KEY = 'viszio-hvac-access';
 
@@ -41,8 +42,10 @@ export function AccessGate({ children }: { children: ReactNode }) {
     const hash = await sha256Hex(value);
     if (hash === ACCESS_CODE_HASH) {
       localStorage.setItem(STORAGE_KEY, hash);
+      trackEvent('access-unlocked');
       setUnlocked(true);
     } else {
+      trackEvent('access-failed');
       setError(true);
       setChecking(false);
     }

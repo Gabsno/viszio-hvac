@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Download, Share, X, Plus } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 // The browser's install-prompt event (not in the standard TS DOM lib).
 interface BeforeInstallPromptEvent extends Event {
@@ -56,6 +57,7 @@ export function InstallButton() {
   if (!canPrompt && !ios) return null;
 
   async function handleClick() {
+    trackEvent('install-clicked');
     if (ios) {
       setShowIosHelp(true);
       return;

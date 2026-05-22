@@ -48,3 +48,17 @@ export function trackPage(path: string): void {
     w.goatcounter?.count?.({ path });
   }
 }
+
+/**
+ * Record an anonymous action event (a search, a tool used, a lesson
+ * completed, etc.) — distinct from a page view. No personal data.
+ */
+export function trackEvent(name: string): void {
+  if (!ANALYTICS.enabled || !ANALYTICS.site) return;
+  const w = window as AnalyticsWindow;
+  if (ANALYTICS.provider === 'plausible') {
+    w.plausible?.(name);
+  } else {
+    w.goatcounter?.count?.({ path: name, title: name, event: true });
+  }
+}

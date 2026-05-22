@@ -9,6 +9,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { findLesson, lessonOrder } from '../course/courseData';
+import { trackEvent } from '../lib/analytics';
 import { getArticles } from '../lib/content';
 import { Quiz } from '../course/Quiz';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
@@ -67,6 +68,7 @@ export function LessonPage() {
   function handleComplete(scorePercent: number) {
     setScore(scorePercent);
     completeLesson(lesson.id, scorePercent, lesson.xp);
+    trackEvent(`lesson-completed: ${lesson.id}`);
     for (const a of lesson.articleIds) markRead(a);
 
     // Trophy checks.

@@ -4,6 +4,7 @@ import { X, Send, Sparkles, KeyRound } from 'lucide-react';
 import { useUIStore } from '../store/useUIStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { askTutor, type ChatMessage } from '../lib/ai';
+import { trackEvent } from '../lib/analytics';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 export function AITutorPanel() {
@@ -26,6 +27,7 @@ export function AITutorPanel() {
       setMessages([]);
       setError(null);
       setInput('');
+      trackEvent('ai-tutor-opened');
     }
   }, [open, article?.id]);
 

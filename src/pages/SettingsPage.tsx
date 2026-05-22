@@ -321,7 +321,7 @@ export function SettingsPage() {
         </p>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           {ANALYTICS.enabled
-            ? 'Anonymous, cookieless usage statistics — which pages are viewed — are collected to understand which content is most useful. No personal data, no accounts, and never your private notes.'
+            ? 'Anonymous, cookieless usage statistics are collected — which pages are viewed, plus basic actions such as searches and which tools are used — to understand what is most useful. No personal data, no accounts, and never your private notes.'
             : 'No usage tracking is currently active.'}
         </p>
       </Section>

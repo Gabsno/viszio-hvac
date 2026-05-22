@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { searchArticles } from '../lib/search';
 import { pillarTitle, topicTitle } from '../lib/content';
+import { trackEvent } from '../lib/analytics';
 import { DifficultyBadge, TierBadge } from './Badges';
 import type { SearchHit } from '../types';
 
@@ -51,6 +52,18 @@ export function SearchBar({ fullScreen, onNavigate, autoFocus }: Props) {
   );
 
   useEffect(() => setActive(0), [debounced]);
+
+  // Record a settled search for analytics — once typing has paused.
+  useEffect(() => {
+    const q = debounced.trim();
+    if (q.length < 3) return;
+    const t = setTimeout(() => {
+      trackEvent(
+        `search: ${q} (${hits.length} result${hits.length === 1 ? '' : 's'})`,
+      );
+    }, 1300);
+    return () => clearTimeout(t);
+  }, [debounced, hits.length]);
 
   // "/" focuses the search from anywhere.
   useEffect(() => {
