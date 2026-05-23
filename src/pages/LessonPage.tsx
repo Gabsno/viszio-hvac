@@ -52,7 +52,8 @@ export function LessonPage() {
   // ~15s of activity, so a keep-alive nudges resume() while playing.
   const chunks = useRef<string[]>([]);
   const chunkIndex = useRef<number>(0);
-  const userCancelled = useRef<boolean>(false);
+  // See ArticlePage for the epoch-counter rationale.
+  const epoch = useRef<number>(0);
   const keepAlive = useRef<number | null>(null);
 
   function clearKeepAlive() {
@@ -88,6 +89,7 @@ export function LessonPage() {
       return;
     }
     chunkIndex.current = index;
+    const myEpoch = epoch.current;
     const utter = new SpeechSynthesisUtterance(chunks.current[index]);
     utter.rate = speechRate;
     utter.pitch = speechPitch;
@@ -102,17 +104,11 @@ export function LessonPage() {
       }
     }
     utter.onend = () => {
-      if (userCancelled.current) {
-        userCancelled.current = false;
-        return;
-      }
+      if (myEpoch !== epoch.current) return; // superseded — ignore
       speakChunkAt(index + 1);
     };
     utter.onerror = () => {
-      if (userCancelled.current) {
-        userCancelled.current = false;
-        return;
-      }
+      if (myEpoch !== epoch.current) return; // superseded — ignore
       clearKeepAlive();
       setSpeakingId(null);
       setSpeechState('idle');
@@ -159,7 +155,7 @@ export function LessonPage() {
       return;
     }
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++;
     synth.cancel();
     await waitForCancel();
     chunks.current = buildChunks(title, body);
@@ -175,7 +171,7 @@ export function LessonPage() {
     const synth = window.speechSynthesis;
     if (!synth) return;
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++;
     synth.cancel();
     setSpeechState('paused');
   }
@@ -193,7 +189,7 @@ export function LessonPage() {
     const synth = window.speechSynthesis;
     if (!synth) return;
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++;
     synth.cancel();
     chunks.current = [];
     chunkIndex.current = 0;
@@ -207,7 +203,7 @@ export function LessonPage() {
     setScore(0);
     // Stop any in-progress narration when switching lessons.
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++;
     window.speechSynthesis?.cancel();
     chunks.current = [];
     chunkIndex.current = 0;

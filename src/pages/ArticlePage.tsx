@@ -76,9 +76,13 @@ export function ArticlePage() {
   // is just a fresh speak() call.
   const chunks = useRef<string[]>([]);
   const chunkIndex = useRef<number>(0);
-  // True when the next utterance error is our own cancel(), so we don't
-  // mistake it for a real failure and reset state.
-  const userCancelled = useRef<boolean>(false);
+  // Epoch counter: bumped whenever we want to invalidate any in-flight
+  // utterance handlers (pause / stop / restart). Each handler captures the
+  // epoch at the time its utterance was created and checks against the
+  // current epoch — stale handlers from cancelled utterances bail out
+  // cleanly. This is more robust than a "did the user cancel?" flag,
+  // which races when cancel() fires no event (nothing was speaking).
+  const epoch = useRef<number>(0);
   // Chrome silently stops speech after ~15s. Calling resume() periodically
   // keeps the engine alive while we're playing.
   const keepAlive = useRef<number | null>(null);
@@ -117,6 +121,7 @@ export function ArticlePage() {
       return;
     }
     chunkIndex.current = index;
+    const myEpoch = epoch.current;
     const utter = new SpeechSynthesisUtterance(chunks.current[index]);
     utter.rate = speechRate;
     utter.pitch = speechPitch;
@@ -131,17 +136,11 @@ export function ArticlePage() {
       }
     }
     utter.onend = () => {
-      if (userCancelled.current) {
-        userCancelled.current = false;
-        return;
-      }
+      if (myEpoch !== epoch.current) return; // superseded — ignore
       speakChunkAt(index + 1);
     };
     utter.onerror = () => {
-      if (userCancelled.current) {
-        userCancelled.current = false;
-        return;
-      }
+      if (myEpoch !== epoch.current) return; // superseded — ignore
       clearKeepAlive();
       setSpeechState('idle');
     };
@@ -185,7 +184,7 @@ export function ArticlePage() {
     }
     if (!article) return;
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++; // invalidate any in-flight handlers
     synth.cancel();
     await waitForCancel();
     chunks.current = buildChunks();
@@ -202,7 +201,9 @@ export function ArticlePage() {
     clearKeepAlive();
     // Cancel the active utterance — we'll restart this same chunk on
     // resume. Don't use synth.pause; it's unreliable cross-browser.
-    userCancelled.current = true;
+    // Bump the epoch so the cancelled utterance's onend/onerror handlers
+    // become no-ops and don't auto-advance to the next chunk.
+    epoch.current++;
     synth.cancel();
     setSpeechState('paused');
   }
@@ -221,7 +222,7 @@ export function ArticlePage() {
     const synth = window.speechSynthesis;
     if (!synth) return;
     clearKeepAlive();
-    userCancelled.current = true;
+    epoch.current++;
     synth.cancel();
     chunks.current = [];
     chunkIndex.current = 0;
