@@ -17,6 +17,11 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useUserStore } from '../store/useUserStore';
 import { BUILD_INFO } from '../lib/version';
 import {
+  VOICE_PRESETS,
+  matchActivePreset,
+  pickVoiceForPreset,
+} from '../lib/voicePresets';
+import {
   APP_NAME,
   SUPPORT_EMAIL,
   SAAS_MODE_ENABLED,
@@ -292,6 +297,53 @@ export function SettingsPage() {
               High contrast maximises text contrast for easier reading.
             </p>
           </div>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Voice preset
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {VOICE_PRESETS.map((p) => {
+                const active =
+                  matchActivePreset(speechVoice, speechRate, speechPitch) ===
+                  p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      const synth = window.speechSynthesis;
+                      const list = synth ? synth.getVoices() : [];
+                      const voiceId = pickVoiceForPreset(p, list);
+                      setSpeechVoice(voiceId);
+                      setSpeechRate(p.rate);
+                      setSpeechPitch(p.pitch);
+                      setVoiceTestInfo('');
+                    }}
+                    className={`rounded-lg border p-2.5 text-left text-xs transition ${
+                      active
+                        ? 'border-teal-500 bg-teal-50 dark:bg-teal-950/40'
+                        : 'border-slate-300 hover:border-teal-400 dark:border-slate-700'
+                    }`}
+                  >
+                    <div className="font-semibold text-slate-800 dark:text-slate-100">
+                      {p.label}
+                    </div>
+                    <div className="mt-0.5 text-[10px] leading-tight text-slate-500 dark:text-slate-400">
+                      {p.rate.toFixed(2)}× speed · pitch {p.pitch.toFixed(2)}
+                    </div>
+                    <div className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                      {p.description}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1.5 text-xs text-slate-400">
+              Each preset picks the best matching accent your device has and
+              layers on its own speed and pitch. Tap any one to apply — you can
+              still fine-tune below.
+            </p>
+          </div>
+
           <div>
             <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
               Reading voice
