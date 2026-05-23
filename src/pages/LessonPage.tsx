@@ -33,6 +33,8 @@ export function LessonPage() {
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const openTutor = useUIStore((s) => s.openTutor);
   const speechVoice = useSettingsStore((s) => s.speechVoice);
+  const speechRate = useSettingsStore((s) => s.speechRate);
+  const speechPitch = useSettingsStore((s) => s.speechPitch);
 
   const [phase, setPhase] = useState<Phase>('learn');
   const [score, setScore] = useState(0);
@@ -51,12 +53,13 @@ export function LessonPage() {
       return;
     }
     const utter = new SpeechSynthesisUtterance(next);
-    utter.rate = 1;
+    utter.rate = speechRate;
+    utter.pitch = speechPitch;
     if (speechVoice) {
       const [name, lang] = speechVoice.split('|');
-      const v = synth
-        .getVoices()
-        .find((x) => x.name === name && x.lang === lang);
+      const list = synth.getVoices();
+      let v = list.find((x) => x.name === name && x.lang === lang);
+      if (!v) v = list.find((x) => x.lang === lang);
       if (v) {
         utter.voice = v;
         utter.lang = v.lang;

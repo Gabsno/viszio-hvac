@@ -52,6 +52,8 @@ export function SettingsPage() {
     fontSize,
     readingMode,
     speechVoice,
+    speechRate,
+    speechPitch,
     setProvider,
     setGeminiKey,
     setClaudeKey,
@@ -59,12 +61,15 @@ export function SettingsPage() {
     setFontSize,
     setReadingMode,
     setSpeechVoice,
+    setSpeechRate,
+    setSpeechPitch,
   } = useSettingsStore();
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const tier = useUserStore((s) => s.tier);
 
   const [showKey, setShowKey] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [voiceTestInfo, setVoiceTestInfo] = useState<string>('');
 
   // Speech voices load asynchronously on most browsers.
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -294,7 +299,10 @@ export function SettingsPage() {
             <div className="flex flex-wrap gap-2">
               <select
                 value={speechVoice}
-                onChange={(e) => setSpeechVoice(e.target.value)}
+                onChange={(e) => {
+                  setSpeechVoice(e.target.value);
+                  setVoiceTestInfo('');
+                }}
                 className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-800"
               >
                 <option value="">System default</option>
@@ -308,9 +316,10 @@ export function SettingsPage() {
                   )
                   .map((v) => {
                     const id = `${v.name}|${v.lang}`;
+                    const tag = v.localService ? 'local' : 'online';
                     return (
                       <option key={id} value={id}>
-                        {v.name} ({v.lang})
+                        {v.name} ({v.lang}) · {tag}
                         {v.default ? ' · default' : ''}
                       </option>
                     );
@@ -322,17 +331,58 @@ export function SettingsPage() {
                   if (!synth) return;
                   synth.cancel();
                   const u = new SpeechSynthesisUtterance(
-                    'This is a sample of the selected reading voice.',
+                    'This is a sample of the selected reading voice for the Viszio HVAC app.',
                   );
+                  u.rate = speechRate;
+                  u.pitch = speechPitch;
+                  let picked: SpeechSynthesisVoice | null = null;
                   if (speechVoice) {
                     const [name, lang] = speechVoice.split('|');
-                    const v = synth
-                      .getVoices()
-                      .find((x) => x.name === name && x.lang === lang);
-                    if (v) {
-                      u.voice = v;
-                      u.lang = v.lang;
+                    const list = synth.getVoices();
+                    picked =
+                      list.find(
+                        (x) => x.name === name && x.lang === lang,
+                      ) ?? null;
+                    // Fall back to any voice with the same language.
+                    if (!picked) {
+                      picked = list.find((x) => x.lang === lang) ?? null;
                     }
+                    if (picked) {
+                      u.voice = picked;
+                      u.lang = picked.lang;
+                    }
+                  }
+                  u.onstart = () => {
+                    if (!speechVoice) {
+                      setVoiceTestInfo('Playing the browser default voice.');
+                    } else if (picked) {
+                      const requested = speechVoice.split('|')[0];
+                      if (picked.name === requested) {
+                        setVoiceTestInfo(
+                          `Playing: ${picked.name} (${picked.lang}) · ${
+                            picked.localService ? 'local' : 'online'
+                          }`,
+                        );
+                      } else {
+                        setVoiceTestInfo(
+                          `Requested "${requested}" wasn't available — playing ${picked.name} (${picked.lang}) instead.`,
+                        );
+                      }
+                    } else {
+                      setVoiceTestInfo(
+                        `Requested voice not found on this device — playing browser default.`,
+                      );
+                    }
+                  };
+                  u.onerror = () => {
+                    setVoiceTestInfo(
+                      'Speech engine returned an error. Try a different voice or check your device TTS settings.',
+                    );
+                  };
+                  try {
+                    synth.resume();
+                  } catch {
+                    /* ignore */
                   }
                   synth.speak(u);
                 }}
@@ -341,12 +391,62 @@ export function SettingsPage() {
                 Test
               </button>
             </div>
+            {voiceTestInfo && (
+              <p className="mt-1.5 rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                {voiceTestInfo}
+              </p>
+            )}
             <p className="mt-1.5 text-xs text-slate-400">
-              Only English voices are shown — the articles are in English, and
-              non-English voices fail on English text. Picks include US, UK,
-              Indian, Australian and other regional accents your device has.
+              Only English voices are shown. Each voice is tagged{' '}
+              <strong>local</strong> (installed on your device — these reliably
+              sound different from each other) or <strong>online</strong>{' '}
+              (streamed from a cloud engine — may need internet and can fall
+              back to the default if unavailable). If every voice sounds the
+              same, your device only ships one underlying TTS engine — use the
+              speed and pitch sliders below for variety, or install another TTS
+              engine in your phone or OS settings.
               {voices.length === 0 ? ' Loading voices…' : ''}
             </p>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Reading speed · <span className="text-slate-500">{speechRate.toFixed(2)}×</span>
+            </p>
+            <input
+              type="range"
+              min="0.6"
+              max="1.6"
+              step="0.05"
+              value={speechRate}
+              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+              className="w-full accent-teal-600"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400">
+              <span>0.6× slow</span>
+              <span>1.0×</span>
+              <span>1.6× fast</span>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Reading pitch · <span className="text-slate-500">{speechPitch.toFixed(2)}</span>
+            </p>
+            <input
+              type="range"
+              min="0.6"
+              max="1.6"
+              step="0.05"
+              value={speechPitch}
+              onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
+              className="w-full accent-teal-600"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400">
+              <span>0.6 deeper</span>
+              <span>1.0</span>
+              <span>1.6 higher</span>
+            </div>
           </div>
         </div>
       </Section>

@@ -41,6 +41,8 @@ export function ArticlePage() {
   const setNote = useProgressStore((s) => s.setNote);
   const openTutor = useUIStore((s) => s.openTutor);
   const speechVoice = useSettingsStore((s) => s.speechVoice);
+  const speechRate = useSettingsStore((s) => s.speechRate);
+  const speechPitch = useSettingsStore((s) => s.speechPitch);
 
   const [showNotes, setShowNotes] = useState(false);
   const [noteDraft, setNoteDraft] = useState(savedNote);
@@ -72,12 +74,16 @@ export function ArticlePage() {
       return;
     }
     const utter = new SpeechSynthesisUtterance(next);
-    utter.rate = 1;
+    utter.rate = speechRate;
+    utter.pitch = speechPitch;
     if (speechVoice) {
       const [name, lang] = speechVoice.split('|');
-      const v = synth
-        .getVoices()
-        .find((x) => x.name === name && x.lang === lang);
+      const list = synth.getVoices();
+      let v = list.find((x) => x.name === name && x.lang === lang);
+      // Fall back to any voice with the same lang if the exact name/lang
+      // pair isn't currently available (some browsers swap voice lists
+      // between sessions or skip non-local voices when offline).
+      if (!v) v = list.find((x) => x.lang === lang);
       if (v) {
         utter.voice = v;
         utter.lang = v.lang;

@@ -16,6 +16,8 @@ interface SettingsState {
   userName: string;
   calcUnits: UnitSystem;
   speechVoice: string;
+  speechRate: number;
+  speechPitch: number;
   setProvider: (p: AIProvider) => void;
   setGeminiKey: (k: string) => void;
   setClaudeKey: (k: string) => void;
@@ -26,6 +28,8 @@ interface SettingsState {
   setUserName: (n: string) => void;
   setCalcUnits: (u: UnitSystem) => void;
   setSpeechVoice: (uri: string) => void;
+  setSpeechRate: (r: number) => void;
+  setSpeechPitch: (p: number) => void;
   activeKey: () => string;
 }
 
@@ -41,6 +45,8 @@ export const useSettingsStore = create<SettingsState>()(
       userName: '',
       calcUnits: 'SI',
       speechVoice: '',
+      speechRate: 1,
+      speechPitch: 1,
       setProvider: (aiProvider) => set({ aiProvider }),
       setGeminiKey: (geminiKey) => set({ geminiKey }),
       setClaudeKey: (claudeKey) => set({ claudeKey }),
@@ -52,6 +58,8 @@ export const useSettingsStore = create<SettingsState>()(
       setUserName: (userName) => set({ userName }),
       setCalcUnits: (calcUnits) => set({ calcUnits }),
       setSpeechVoice: (speechVoice) => set({ speechVoice }),
+      setSpeechRate: (speechRate) => set({ speechRate }),
+      setSpeechPitch: (speechPitch) => set({ speechPitch }),
       activeKey: () => {
         const s = get();
         return s.aiProvider === 'gemini' ? s.geminiKey : s.claudeKey;
