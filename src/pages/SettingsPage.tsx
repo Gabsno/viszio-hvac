@@ -300,6 +300,7 @@ export function SettingsPage() {
                 <option value="">System default</option>
                 {voices
                   .slice()
+                  .filter((v) => v.lang.toLowerCase().startsWith('en'))
                   .sort(
                     (a, b) =>
                       a.lang.localeCompare(b.lang) ||
@@ -341,8 +342,9 @@ export function SettingsPage() {
               </button>
             </div>
             <p className="mt-1.5 text-xs text-slate-400">
-              Voices come from your device or browser — the list varies by
-              platform.
+              Only English voices are shown — the articles are in English, and
+              non-English voices fail on English text. Picks include US, UK,
+              Indian, Australian and other regional accents your device has.
               {voices.length === 0 ? ' Loading voices…' : ''}
             </p>
           </div>
