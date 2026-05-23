@@ -15,6 +15,7 @@ interface SettingsState {
   readingMode: ReadingMode;
   userName: string;
   calcUnits: UnitSystem;
+  speechVoice: string;
   setProvider: (p: AIProvider) => void;
   setGeminiKey: (k: string) => void;
   setClaudeKey: (k: string) => void;
@@ -24,6 +25,7 @@ interface SettingsState {
   setReadingMode: (m: ReadingMode) => void;
   setUserName: (n: string) => void;
   setCalcUnits: (u: UnitSystem) => void;
+  setSpeechVoice: (uri: string) => void;
   activeKey: () => string;
 }
 
@@ -38,6 +40,7 @@ export const useSettingsStore = create<SettingsState>()(
       readingMode: 'default',
       userName: '',
       calcUnits: 'SI',
+      speechVoice: '',
       setProvider: (aiProvider) => set({ aiProvider }),
       setGeminiKey: (geminiKey) => set({ geminiKey }),
       setClaudeKey: (claudeKey) => set({ claudeKey }),
@@ -48,6 +51,7 @@ export const useSettingsStore = create<SettingsState>()(
       setReadingMode: (readingMode) => set({ readingMode }),
       setUserName: (userName) => set({ userName }),
       setCalcUnits: (calcUnits) => set({ calcUnits }),
+      setSpeechVoice: (speechVoice) => set({ speechVoice }),
       activeKey: () => {
         const s = get();
         return s.aiProvider === 'gemini' ? s.geminiKey : s.claudeKey;

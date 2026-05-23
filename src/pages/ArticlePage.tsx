@@ -25,6 +25,7 @@ import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { TierGate } from '../components/TierGate';
 import { useProgressStore } from '../store/useProgressStore';
 import { useUIStore } from '../store/useUIStore';
+import { useSettingsStore } from '../store/useSettingsStore';
 
 export function ArticlePage() {
   const { id = '' } = useParams();
@@ -39,6 +40,7 @@ export function ArticlePage() {
   const savedNote = useProgressStore((s) => s.notes[id] ?? '');
   const setNote = useProgressStore((s) => s.setNote);
   const openTutor = useUIStore((s) => s.openTutor);
+  const speechVoice = useSettingsStore((s) => s.speechVoice);
 
   const [showNotes, setShowNotes] = useState(false);
   const [noteDraft, setNoteDraft] = useState(savedNote);
@@ -71,6 +73,10 @@ export function ArticlePage() {
     }
     const utter = new SpeechSynthesisUtterance(next);
     utter.rate = 1;
+    if (speechVoice) {
+      const v = synth.getVoices().find((x) => x.voiceURI === speechVoice);
+      if (v) utter.voice = v;
+    }
     utter.onend = () => speakNextChunk();
     utter.onerror = () => {
       speechQueue.current = [];

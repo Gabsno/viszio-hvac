@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Sparkles,
   CreditCard,
@@ -51,18 +51,31 @@ export function SettingsPage() {
     theme,
     fontSize,
     readingMode,
+    speechVoice,
     setProvider,
     setGeminiKey,
     setClaudeKey,
     setTheme,
     setFontSize,
     setReadingMode,
+    setSpeechVoice,
   } = useSettingsStore();
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const tier = useUserStore((s) => s.tier);
 
   const [showKey, setShowKey] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+
+  // Speech voices load asynchronously on most browsers.
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const load = () => setVoices(synth.getVoices());
+    load();
+    synth.addEventListener?.('voiceschanged', load);
+    return () => synth.removeEventListener?.('voiceschanged', load);
+  }, []);
 
   return (
     <div className="mx-auto max-w-2xl space-y-5 px-4 py-6 sm:px-6">
@@ -272,6 +285,58 @@ export function SettingsPage() {
             <p className="mt-1.5 text-xs text-slate-400">
               Dyslexia-friendly mode adds letter and line spacing in articles.
               High contrast maximises text contrast for easier reading.
+            </p>
+          </div>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Reading voice
+            </p>
+            <div className="flex gap-2">
+              <select
+                value={speechVoice}
+                onChange={(e) => setSpeechVoice(e.target.value)}
+                className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-800"
+              >
+                <option value="">System default</option>
+                {voices
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      a.lang.localeCompare(b.lang) ||
+                      a.name.localeCompare(b.name),
+                  )
+                  .map((v) => (
+                    <option key={v.voiceURI} value={v.voiceURI}>
+                      {v.name} ({v.lang})
+                      {v.default ? ' · default' : ''}
+                    </option>
+                  ))}
+              </select>
+              <button
+                onClick={() => {
+                  const synth = window.speechSynthesis;
+                  if (!synth) return;
+                  synth.cancel();
+                  const u = new SpeechSynthesisUtterance(
+                    'This is a sample of the selected reading voice.',
+                  );
+                  if (speechVoice) {
+                    const v = synth
+                      .getVoices()
+                      .find((x) => x.voiceURI === speechVoice);
+                    if (v) u.voice = v;
+                  }
+                  synth.speak(u);
+                }}
+                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+              >
+                Test
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-slate-400">
+              Voices come from your device or browser — the list varies by
+              platform.
+              {voices.length === 0 ? ' Loading voices…' : ''}
             </p>
           </div>
         </div>
