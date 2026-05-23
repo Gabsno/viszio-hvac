@@ -1,19 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
   GraduationCap,
   Sparkles,
+  Square,
   Star,
   Trophy,
+  Volume2,
 } from 'lucide-react';
 import { findLesson, lessonOrder } from '../course/courseData';
 import { trackEvent } from '../lib/analytics';
-import { getArticles } from '../lib/content';
+import { getArticles, toPlainText } from '../lib/content';
 import { Quiz } from '../course/Quiz';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { useProgressStore } from '../store/useProgressStore';
+import { useSettingsStore } from '../store/useSettingsStore';
 import { useUIStore } from '../store/useUIStore';
 
 type Phase = 'learn' | 'quiz' | 'result';
@@ -29,16 +32,100 @@ export function LessonPage() {
   const currentStreak = useProgressStore((s) => s.currentStreak);
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const openTutor = useUIStore((s) => s.openTutor);
+  const speechVoice = useSettingsStore((s) => s.speechVoice);
 
   const [phase, setPhase] = useState<Phase>('learn');
   const [score, setScore] = useState(0);
+  // Which article (by id) is currently being read aloud, or null.
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  // Speech is queued in small chunks so Chrome does not silently cut off
+  // long utterances and so iOS Safari handles each piece cleanly.
+  const speechQueue = useRef<string[]>([]);
+
+  function speakNextChunk() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const next = speechQueue.current.shift();
+    if (!next) {
+      setSpeakingId(null);
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(next);
+    utter.rate = 1;
+    if (speechVoice) {
+      const [name, lang] = speechVoice.split('|');
+      const v = synth
+        .getVoices()
+        .find((x) => x.name === name && x.lang === lang);
+      if (v) {
+        utter.voice = v;
+        utter.lang = v.lang;
+      }
+    }
+    utter.onend = () => speakNextChunk();
+    utter.onerror = () => {
+      speechQueue.current = [];
+      setSpeakingId(null);
+    };
+    synth.speak(utter);
+  }
+
+  function toggleSpeak(articleId: string, title: string, body: string) {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      alert(
+        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
+      );
+      return;
+    }
+    // Tapping the same article's button while it's reading stops it.
+    if (speakingId === articleId) {
+      synth.cancel();
+      speechQueue.current = [];
+      setSpeakingId(null);
+      return;
+    }
+    // Tapping a different article's button switches the queue.
+    synth.cancel();
+    speechQueue.current = [];
+
+    const text = `${title}. ${toPlainText(body)}`;
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    const chunks: string[] = [];
+    let cur = '';
+    for (const s of sentences) {
+      if ((cur + ' ' + s).length > 200 && cur) {
+        chunks.push(cur.trim());
+        cur = s;
+      } else {
+        cur = cur ? cur + ' ' + s : s;
+      }
+    }
+    if (cur.trim()) chunks.push(cur.trim());
+    speechQueue.current = chunks;
+    setSpeakingId(articleId);
+    trackEvent('lesson-read-aloud');
+    try {
+      synth.resume();
+    } catch {
+      /* ignore */
+    }
+    speakNextChunk();
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setPhase('learn');
     setScore(0);
+    // Stop any in-progress narration when switching lessons.
+    window.speechSynthesis?.cancel();
+    speechQueue.current = [];
+    setSpeakingId(null);
     if (findLesson(lessonId)) trackEvent(`lesson-started: ${lessonId}`);
   }, [lessonId]);
+
+  // Stop any read-aloud when leaving the lesson.
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
   const articles = useMemo(
     () => (found ? getArticles(found.lesson.articleIds) : []),
@@ -111,13 +198,28 @@ export function LessonPage() {
               key={a.id}
               className="mb-5 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6"
             >
-              <div className="mb-2 flex items-center gap-2">
-                <h2 className="flex-1 text-lg font-bold text-slate-900 dark:text-white">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <h2 className="min-w-0 flex-1 text-lg font-bold text-slate-900 dark:text-white">
                   {a.title}
                 </h2>
                 <button
+                  onClick={() => toggleSpeak(a.id, a.title, a.body)}
+                  className={`flex shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+                    speakingId === a.id
+                      ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                      : 'border-slate-300 text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {speakingId === a.id ? (
+                    <Square size={13} />
+                  ) : (
+                    <Volume2 size={13} />
+                  )}
+                  {speakingId === a.id ? 'Stop' : 'Listen'}
+                </button>
+                <button
                   onClick={() => openTutor(a)}
-                  className="flex items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                  className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
                 >
                   <Sparkles size={13} /> Tutor
                 </button>
@@ -128,6 +230,9 @@ export function LessonPage() {
 
           <button
             onClick={() => {
+              window.speechSynthesis?.cancel();
+              speechQueue.current = [];
+              setSpeakingId(null);
               setPhase('quiz');
               window.scrollTo(0, 0);
             }}
