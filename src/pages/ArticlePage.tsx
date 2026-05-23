@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   Bookmark,
@@ -57,26 +57,67 @@ export function ArticlePage() {
   // Stop any read-aloud when leaving the article.
   useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
-  function toggleSpeak() {
+  // Speech is queued in small chunks so Chrome does not silently cut off
+  // long utterances and so iOS Safari handles each piece cleanly.
+  const speechQueue = useRef<string[]>([]);
+
+  function speakNextChunk() {
     const synth = window.speechSynthesis;
-    if (!synth || !article) return;
-    if (speaking) {
-      synth.cancel();
+    if (!synth) return;
+    const next = speechQueue.current.shift();
+    if (!next) {
       setSpeaking(false);
       return;
     }
-    const text = `${article.title}. ${toPlainText(article.body)}`.slice(
-      0,
-      28000,
-    );
-    const utter = new SpeechSynthesisUtterance(text);
+    const utter = new SpeechSynthesisUtterance(next);
     utter.rate = 1;
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    synth.cancel();
+    utter.onend = () => speakNextChunk();
+    utter.onerror = () => {
+      speechQueue.current = [];
+      setSpeaking(false);
+    };
     synth.speak(utter);
+  }
+
+  function toggleSpeak() {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      alert(
+        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
+      );
+      return;
+    }
+    if (!article) return;
+    if (speaking) {
+      synth.cancel();
+      speechQueue.current = [];
+      setSpeaking(false);
+      return;
+    }
+    const text = `${article.title}. ${toPlainText(article.body)}`;
+    // Split into sentence-based chunks <= ~200 chars to dodge browser bugs.
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    const chunks: string[] = [];
+    let cur = '';
+    for (const s of sentences) {
+      if ((cur + ' ' + s).length > 200 && cur) {
+        chunks.push(cur.trim());
+        cur = s;
+      } else {
+        cur = cur ? cur + ' ' + s : s;
+      }
+    }
+    if (cur.trim()) chunks.push(cur.trim());
+    speechQueue.current = chunks;
     setSpeaking(true);
     trackEvent('read-aloud');
+    // iOS sometimes leaves the engine paused — nudge it.
+    try {
+      synth.resume();
+    } catch {
+      /* ignore */
+    }
+    speakNextChunk();
   }
 
   // Debounced note persistence.
