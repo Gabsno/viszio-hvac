@@ -305,12 +305,15 @@ export function SettingsPage() {
                       a.lang.localeCompare(b.lang) ||
                       a.name.localeCompare(b.name),
                   )
-                  .map((v) => (
-                    <option key={v.voiceURI} value={v.voiceURI}>
-                      {v.name} ({v.lang})
-                      {v.default ? ' · default' : ''}
-                    </option>
-                  ))}
+                  .map((v) => {
+                    const id = `${v.name}|${v.lang}`;
+                    return (
+                      <option key={id} value={id}>
+                        {v.name} ({v.lang})
+                        {v.default ? ' · default' : ''}
+                      </option>
+                    );
+                  })}
               </select>
               <button
                 onClick={() => {
@@ -321,10 +324,14 @@ export function SettingsPage() {
                     'This is a sample of the selected reading voice.',
                   );
                   if (speechVoice) {
+                    const [name, lang] = speechVoice.split('|');
                     const v = synth
                       .getVoices()
-                      .find((x) => x.voiceURI === speechVoice);
-                    if (v) u.voice = v;
+                      .find((x) => x.name === name && x.lang === lang);
+                    if (v) {
+                      u.voice = v;
+                      u.lang = v.lang;
+                    }
                   }
                   synth.speak(u);
                 }}

@@ -74,8 +74,14 @@ export function ArticlePage() {
     const utter = new SpeechSynthesisUtterance(next);
     utter.rate = 1;
     if (speechVoice) {
-      const v = synth.getVoices().find((x) => x.voiceURI === speechVoice);
-      if (v) utter.voice = v;
+      const [name, lang] = speechVoice.split('|');
+      const v = synth
+        .getVoices()
+        .find((x) => x.name === name && x.lang === lang);
+      if (v) {
+        utter.voice = v;
+        utter.lang = v.lang;
+      }
     }
     utter.onend = () => speakNextChunk();
     utter.onerror = () => {
