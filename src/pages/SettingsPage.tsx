@@ -291,11 +291,11 @@ export function SettingsPage() {
             <p className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
               Reading voice
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <select
                 value={speechVoice}
                 onChange={(e) => setSpeechVoice(e.target.value)}
-                className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-800"
+                className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-800"
               >
                 <option value="">System default</option>
                 {voices
@@ -335,7 +335,7 @@ export function SettingsPage() {
                   }
                   synth.speak(u);
                 }}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                className="shrink-0 rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
               >
                 Test
               </button>
