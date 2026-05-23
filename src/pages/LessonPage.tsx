@@ -4,6 +4,9 @@ import {
   ArrowLeft,
   ArrowRight,
   GraduationCap,
+  Pause,
+  Play,
+  RotateCcw,
   Sparkles,
   Square,
   Star,
@@ -38,8 +41,10 @@ export function LessonPage() {
 
   const [phase, setPhase] = useState<Phase>('learn');
   const [score, setScore] = useState(0);
-  // Which article (by id) is currently being read aloud, or null.
+  // Track per-article speech state. Only one article can be active at a time.
+  type SpeechState = 'idle' | 'playing' | 'paused';
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [speechState, setSpeechState] = useState<SpeechState>('idle');
   // Speech is queued in small chunks so Chrome does not silently cut off
   // long utterances and so iOS Safari handles each piece cleanly.
   const speechQueue = useRef<string[]>([]);
@@ -50,6 +55,7 @@ export function LessonPage() {
     const next = speechQueue.current.shift();
     if (!next) {
       setSpeakingId(null);
+      setSpeechState('idle');
       return;
     }
     const utter = new SpeechSynthesisUtterance(next);
@@ -69,29 +75,12 @@ export function LessonPage() {
     utter.onerror = () => {
       speechQueue.current = [];
       setSpeakingId(null);
+      setSpeechState('idle');
     };
     synth.speak(utter);
   }
 
-  function toggleSpeak(articleId: string, title: string, body: string) {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      alert(
-        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
-      );
-      return;
-    }
-    // Tapping the same article's button while it's reading stops it.
-    if (speakingId === articleId) {
-      synth.cancel();
-      speechQueue.current = [];
-      setSpeakingId(null);
-      return;
-    }
-    // Tapping a different article's button switches the queue.
-    synth.cancel();
-    speechQueue.current = [];
-
+  function buildChunks(title: string, body: string): string[] {
     const text = `${title}. ${toPlainText(body)}`;
     const sentences = text.split(/(?<=[.!?])\s+/);
     const chunks: string[] = [];
@@ -105,8 +94,32 @@ export function LessonPage() {
       }
     }
     if (cur.trim()) chunks.push(cur.trim());
-    speechQueue.current = chunks;
+    return chunks;
+  }
+
+  async function startArticleFromBeginning(
+    articleId: string,
+    title: string,
+    body: string,
+  ) {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      alert(
+        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
+      );
+      return;
+    }
+    // Hard reset before queueing — cancel old utterance and wait for the
+    // engine to actually clear (mobile Safari and some Android browsers
+    // don't honour cancel() instantly).
+    speechQueue.current = [];
+    synth.cancel();
+    for (let i = 0; i < 12 && synth.speaking; i++) {
+      await new Promise((r) => setTimeout(r, 30));
+    }
+    speechQueue.current = buildChunks(title, body);
     setSpeakingId(articleId);
+    setSpeechState('playing');
     trackEvent('lesson-read-aloud');
     try {
       synth.resume();
@@ -114,6 +127,37 @@ export function LessonPage() {
       /* ignore */
     }
     speakNextChunk();
+  }
+
+  function pauseSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    try {
+      synth.pause();
+    } catch {
+      /* ignore */
+    }
+    setSpeechState('paused');
+  }
+
+  function resumeSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    try {
+      synth.resume();
+    } catch {
+      /* ignore */
+    }
+    setSpeechState('playing');
+  }
+
+  function stopSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    speechQueue.current = [];
+    setSpeakingId(null);
+    setSpeechState('idle');
   }
 
   useEffect(() => {
@@ -124,6 +168,7 @@ export function LessonPage() {
     window.speechSynthesis?.cancel();
     speechQueue.current = [];
     setSpeakingId(null);
+    setSpeechState('idle');
     if (findLesson(lessonId)) trackEvent(`lesson-started: ${lessonId}`);
   }, [lessonId]);
 
@@ -205,21 +250,56 @@ export function LessonPage() {
                 <h2 className="min-w-0 flex-1 text-lg font-bold text-slate-900 dark:text-white">
                   {a.title}
                 </h2>
-                <button
-                  onClick={() => toggleSpeak(a.id, a.title, a.body)}
-                  className={`flex shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
-                    speakingId === a.id
-                      ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
-                      : 'border-slate-300 text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  {speakingId === a.id ? (
-                    <Square size={13} />
-                  ) : (
-                    <Volume2 size={13} />
-                  )}
-                  {speakingId === a.id ? 'Stop' : 'Listen'}
-                </button>
+                {speakingId !== a.id && (
+                  <button
+                    onClick={() =>
+                      startArticleFromBeginning(a.id, a.title, a.body)
+                    }
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                  >
+                    <Volume2 size={13} /> Listen
+                  </button>
+                )}
+                {speakingId === a.id && speechState === 'playing' && (
+                  <>
+                    <button
+                      onClick={pauseSpeaking}
+                      className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+                    >
+                      <Pause size={13} /> Pause
+                    </button>
+                    <button
+                      onClick={stopSpeaking}
+                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      <Square size={13} /> Stop
+                    </button>
+                  </>
+                )}
+                {speakingId === a.id && speechState === 'paused' && (
+                  <>
+                    <button
+                      onClick={resumeSpeaking}
+                      className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+                    >
+                      <Play size={13} /> Resume
+                    </button>
+                    <button
+                      onClick={() =>
+                        startArticleFromBeginning(a.id, a.title, a.body)
+                      }
+                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      <RotateCcw size={13} /> Restart
+                    </button>
+                    <button
+                      onClick={stopSpeaking}
+                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      <Square size={13} /> Stop
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={() => openTutor(a)}
                   className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
@@ -236,6 +316,7 @@ export function LessonPage() {
               window.speechSynthesis?.cancel();
               speechQueue.current = [];
               setSpeakingId(null);
+              setSpeechState('idle');
               setPhase('quiz');
               window.scrollTo(0, 0);
             }}

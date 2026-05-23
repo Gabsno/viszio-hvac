@@ -14,6 +14,9 @@ import {
   Printer,
   Volume2,
   Square,
+  Pause,
+  Play,
+  RotateCcw,
 } from 'lucide-react';
 import { ARTICLES, getArticle, extractToc, toPlainText } from '../lib/content';
 import { trackEvent } from '../lib/analytics';
@@ -46,13 +49,14 @@ export function ArticlePage() {
 
   const [showNotes, setShowNotes] = useState(false);
   const [noteDraft, setNoteDraft] = useState(savedNote);
-  const [speaking, setSpeaking] = useState(false);
+  type SpeechState = 'idle' | 'playing' | 'paused';
+  const [speechState, setSpeechState] = useState<SpeechState>('idle');
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setNoteDraft(savedNote);
     setShowNotes(false);
-    setSpeaking(false);
+    setSpeechState('idle');
     window.speechSynthesis?.cancel();
     if (article) recordActivity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,7 +74,7 @@ export function ArticlePage() {
     if (!synth) return;
     const next = speechQueue.current.shift();
     if (!next) {
-      setSpeaking(false);
+      setSpeechState('idle');
       return;
     }
     const utter = new SpeechSynthesisUtterance(next);
@@ -92,28 +96,14 @@ export function ArticlePage() {
     utter.onend = () => speakNextChunk();
     utter.onerror = () => {
       speechQueue.current = [];
-      setSpeaking(false);
+      setSpeechState('idle');
     };
     synth.speak(utter);
   }
 
-  function toggleSpeak() {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      alert(
-        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
-      );
-      return;
-    }
-    if (!article) return;
-    if (speaking) {
-      synth.cancel();
-      speechQueue.current = [];
-      setSpeaking(false);
-      return;
-    }
+  function buildChunks(): string[] {
+    if (!article) return [];
     const text = `${article.title}. ${toPlainText(article.body)}`;
-    // Split into sentence-based chunks <= ~200 chars to dodge browser bugs.
     const sentences = text.split(/(?<=[.!?])\s+/);
     const chunks: string[] = [];
     let cur = '';
@@ -126,16 +116,63 @@ export function ArticlePage() {
       }
     }
     if (cur.trim()) chunks.push(cur.trim());
-    speechQueue.current = chunks;
-    setSpeaking(true);
+    return chunks;
+  }
+
+  async function startFromBeginning() {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      alert(
+        'Your browser does not support text-to-speech. Try Chrome, Edge or Safari.',
+      );
+      return;
+    }
+    if (!article) return;
+    // Hard reset — clear queue and wait for any in-flight utterance to die.
+    speechQueue.current = [];
+    synth.cancel();
+    for (let i = 0; i < 12 && synth.speaking; i++) {
+      await new Promise((r) => setTimeout(r, 30));
+    }
+    speechQueue.current = buildChunks();
+    setSpeechState('playing');
     trackEvent('read-aloud');
-    // iOS sometimes leaves the engine paused — nudge it.
     try {
       synth.resume();
     } catch {
       /* ignore */
     }
     speakNextChunk();
+  }
+
+  function pauseSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    try {
+      synth.pause();
+    } catch {
+      /* ignore */
+    }
+    setSpeechState('paused');
+  }
+
+  function resumeSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    try {
+      synth.resume();
+    } catch {
+      /* ignore */
+    }
+    setSpeechState('playing');
+  }
+
+  function stopSpeaking() {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    speechQueue.current = [];
+    setSpeechState('idle');
   }
 
   // Debounced note persistence.
@@ -260,17 +297,52 @@ export function ArticlePage() {
             <StickyNote size={15} /> Notes
           </button>
 
-          <button
-            onClick={toggleSpeak}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
-              speaking
-                ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
-                : 'border-slate-300 text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300'
-            }`}
-          >
-            {speaking ? <Square size={15} /> : <Volume2 size={15} />}
-            {speaking ? 'Stop' : 'Listen'}
-          </button>
+          {speechState === 'idle' && (
+            <button
+              onClick={startFromBeginning}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+            >
+              <Volume2 size={15} /> Listen
+            </button>
+          )}
+          {speechState === 'playing' && (
+            <>
+              <button
+                onClick={pauseSpeaking}
+                className="flex items-center gap-1.5 rounded-lg border border-teal-500 bg-teal-50 px-3 py-1.5 text-sm font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+              >
+                <Pause size={15} /> Pause
+              </button>
+              <button
+                onClick={stopSpeaking}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+              >
+                <Square size={15} /> Stop
+              </button>
+            </>
+          )}
+          {speechState === 'paused' && (
+            <>
+              <button
+                onClick={resumeSpeaking}
+                className="flex items-center gap-1.5 rounded-lg border border-teal-500 bg-teal-50 px-3 py-1.5 text-sm font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+              >
+                <Play size={15} /> Resume
+              </button>
+              <button
+                onClick={startFromBeginning}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+              >
+                <RotateCcw size={15} /> Restart
+              </button>
+              <button
+                onClick={stopSpeaking}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+              >
+                <Square size={15} /> Stop
+              </button>
+            </>
+          )}
 
           <button
             onClick={() => {

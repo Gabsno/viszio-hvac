@@ -7,6 +7,7 @@ import { SearchOverlay } from './components/SearchOverlay';
 import { AITutorPanel } from './components/AITutorPanel';
 import { AccessGate } from './components/AccessGate';
 import { RevocationGate } from './components/RevocationGate';
+import { WhatsNewModal } from './components/WhatsNewModal';
 import { HomePage } from './pages/HomePage';
 import { LibraryPage } from './pages/LibraryPage';
 import { ArticlePage } from './pages/ArticlePage';
@@ -76,6 +77,7 @@ export default function App() {
         <UpdateBanner />
         <SearchOverlay />
         <AITutorPanel />
+        <WhatsNewModal />
       </AccessGate>
     </RevocationGate>
   );
