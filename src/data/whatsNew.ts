@@ -11,11 +11,11 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-23-listen-player',
+    id: '2026-05-23-listen-player-v2',
     date: 'May 2026',
     title: 'Better listening, more voice control',
     items: [
-      'Listen now has full player controls — Pause, Resume, Restart, and Stop instead of a single toggle.',
+      'Listen now has full player controls — Pause, Resume, Restart, and Stop instead of a single toggle. Resume reliably picks up where you paused, and a keep-alive prevents the silent 15-second auto-stop that some browsers ship with.',
       'Six one-tap voice presets in Settings → Accessibility: Narrator, Lecturer, Coach, Storyteller, Calm Guide and Bright Tutor.',
       'Reading speed (0.6×–1.6×) and pitch sliders for fine-tuning beyond the presets.',
       'Listen button now appears on every article inside course lessons — not just the library.',

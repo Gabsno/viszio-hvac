@@ -67,35 +67,82 @@ export function ArticlePage() {
 
   // Speech is queued in small chunks so Chrome does not silently cut off
   // long utterances and so iOS Safari handles each piece cleanly.
-  const speechQueue = useRef<string[]>([]);
+  //
+  // We deliberately do NOT use synth.pause() / synth.resume() because both
+  // are broken across browsers (Chrome dies silently after ~15s, iOS
+  // sometimes won't resume at all). Instead we track the current chunk
+  // index — pause cancels the active utterance and remembers the index,
+  // resume re-queues from there. This always works because every resume
+  // is just a fresh speak() call.
+  const chunks = useRef<string[]>([]);
+  const chunkIndex = useRef<number>(0);
+  // True when the next utterance error is our own cancel(), so we don't
+  // mistake it for a real failure and reset state.
+  const userCancelled = useRef<boolean>(false);
+  // Chrome silently stops speech after ~15s. Calling resume() periodically
+  // keeps the engine alive while we're playing.
+  const keepAlive = useRef<number | null>(null);
 
-  function speakNextChunk() {
+  function clearKeepAlive() {
+    if (keepAlive.current !== null) {
+      window.clearInterval(keepAlive.current);
+      keepAlive.current = null;
+    }
+  }
+
+  function startKeepAlive() {
+    clearKeepAlive();
+    keepAlive.current = window.setInterval(() => {
+      const synth = window.speechSynthesis;
+      if (!synth) return;
+      if (synth.speaking && !synth.paused) {
+        // resume() is a harmless no-op when already speaking — but the
+        // call itself keeps Chrome's engine from auto-suspending.
+        try {
+          synth.resume();
+        } catch {
+          /* ignore */
+        }
+      }
+    }, 10000);
+  }
+
+  function speakChunkAt(index: number) {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    const next = speechQueue.current.shift();
-    if (!next) {
+    if (index >= chunks.current.length) {
+      clearKeepAlive();
       setSpeechState('idle');
+      chunkIndex.current = 0;
       return;
     }
-    const utter = new SpeechSynthesisUtterance(next);
+    chunkIndex.current = index;
+    const utter = new SpeechSynthesisUtterance(chunks.current[index]);
     utter.rate = speechRate;
     utter.pitch = speechPitch;
     if (speechVoice) {
       const [name, lang] = speechVoice.split('|');
       const list = synth.getVoices();
       let v = list.find((x) => x.name === name && x.lang === lang);
-      // Fall back to any voice with the same lang if the exact name/lang
-      // pair isn't currently available (some browsers swap voice lists
-      // between sessions or skip non-local voices when offline).
       if (!v) v = list.find((x) => x.lang === lang);
       if (v) {
         utter.voice = v;
         utter.lang = v.lang;
       }
     }
-    utter.onend = () => speakNextChunk();
+    utter.onend = () => {
+      if (userCancelled.current) {
+        userCancelled.current = false;
+        return;
+      }
+      speakChunkAt(index + 1);
+    };
     utter.onerror = () => {
-      speechQueue.current = [];
+      if (userCancelled.current) {
+        userCancelled.current = false;
+        return;
+      }
+      clearKeepAlive();
       setSpeechState('idle');
     };
     synth.speak(utter);
@@ -105,18 +152,27 @@ export function ArticlePage() {
     if (!article) return [];
     const text = `${article.title}. ${toPlainText(article.body)}`;
     const sentences = text.split(/(?<=[.!?])\s+/);
-    const chunks: string[] = [];
+    const out: string[] = [];
     let cur = '';
     for (const s of sentences) {
       if ((cur + ' ' + s).length > 200 && cur) {
-        chunks.push(cur.trim());
+        out.push(cur.trim());
         cur = s;
       } else {
         cur = cur ? cur + ' ' + s : s;
       }
     }
-    if (cur.trim()) chunks.push(cur.trim());
-    return chunks;
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+
+  async function waitForCancel(maxMs = 400) {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const start = Date.now();
+    while (synth.speaking && Date.now() - start < maxMs) {
+      await new Promise((r) => setTimeout(r, 30));
+    }
   }
 
   async function startFromBeginning() {
@@ -128,52 +184,52 @@ export function ArticlePage() {
       return;
     }
     if (!article) return;
-    // Hard reset — clear queue and wait for any in-flight utterance to die.
-    speechQueue.current = [];
+    clearKeepAlive();
+    userCancelled.current = true;
     synth.cancel();
-    for (let i = 0; i < 12 && synth.speaking; i++) {
-      await new Promise((r) => setTimeout(r, 30));
-    }
-    speechQueue.current = buildChunks();
+    await waitForCancel();
+    chunks.current = buildChunks();
+    chunkIndex.current = 0;
     setSpeechState('playing');
     trackEvent('read-aloud');
-    try {
-      synth.resume();
-    } catch {
-      /* ignore */
-    }
-    speakNextChunk();
+    startKeepAlive();
+    speakChunkAt(0);
   }
 
   function pauseSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    try {
-      synth.pause();
-    } catch {
-      /* ignore */
-    }
+    clearKeepAlive();
+    // Cancel the active utterance — we'll restart this same chunk on
+    // resume. Don't use synth.pause; it's unreliable cross-browser.
+    userCancelled.current = true;
+    synth.cancel();
     setSpeechState('paused');
   }
 
-  function resumeSpeaking() {
+  async function resumeSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    try {
-      synth.resume();
-    } catch {
-      /* ignore */
-    }
+    // The cancelled utterance from pause may still be flushing.
+    await waitForCancel();
     setSpeechState('playing');
+    startKeepAlive();
+    speakChunkAt(chunkIndex.current);
   }
 
   function stopSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
+    clearKeepAlive();
+    userCancelled.current = true;
     synth.cancel();
-    speechQueue.current = [];
+    chunks.current = [];
+    chunkIndex.current = 0;
     setSpeechState('idle');
   }
+
+  // Make sure keep-alive timer dies with the component.
+  useEffect(() => () => clearKeepAlive(), []);
 
   // Debounced note persistence.
   useEffect(() => {

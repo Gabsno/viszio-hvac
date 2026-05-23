@@ -45,20 +45,50 @@ export function LessonPage() {
   type SpeechState = 'idle' | 'playing' | 'paused';
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [speechState, setSpeechState] = useState<SpeechState>('idle');
-  // Speech is queued in small chunks so Chrome does not silently cut off
-  // long utterances and so iOS Safari handles each piece cleanly.
-  const speechQueue = useRef<string[]>([]);
+  // Chunk-index playback model — see ArticlePage for the full rationale.
+  // We avoid synth.pause/resume entirely because both are unreliable across
+  // browsers. Pause cancels the active utterance and remembers the chunk
+  // index; resume re-queues from there. Chrome auto-stops speech after
+  // ~15s of activity, so a keep-alive nudges resume() while playing.
+  const chunks = useRef<string[]>([]);
+  const chunkIndex = useRef<number>(0);
+  const userCancelled = useRef<boolean>(false);
+  const keepAlive = useRef<number | null>(null);
 
-  function speakNextChunk() {
+  function clearKeepAlive() {
+    if (keepAlive.current !== null) {
+      window.clearInterval(keepAlive.current);
+      keepAlive.current = null;
+    }
+  }
+
+  function startKeepAlive() {
+    clearKeepAlive();
+    keepAlive.current = window.setInterval(() => {
+      const synth = window.speechSynthesis;
+      if (!synth) return;
+      if (synth.speaking && !synth.paused) {
+        try {
+          synth.resume();
+        } catch {
+          /* ignore */
+        }
+      }
+    }, 10000);
+  }
+
+  function speakChunkAt(index: number) {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    const next = speechQueue.current.shift();
-    if (!next) {
+    if (index >= chunks.current.length) {
+      clearKeepAlive();
       setSpeakingId(null);
       setSpeechState('idle');
+      chunkIndex.current = 0;
       return;
     }
-    const utter = new SpeechSynthesisUtterance(next);
+    chunkIndex.current = index;
+    const utter = new SpeechSynthesisUtterance(chunks.current[index]);
     utter.rate = speechRate;
     utter.pitch = speechPitch;
     if (speechVoice) {
@@ -71,9 +101,19 @@ export function LessonPage() {
         utter.lang = v.lang;
       }
     }
-    utter.onend = () => speakNextChunk();
+    utter.onend = () => {
+      if (userCancelled.current) {
+        userCancelled.current = false;
+        return;
+      }
+      speakChunkAt(index + 1);
+    };
     utter.onerror = () => {
-      speechQueue.current = [];
+      if (userCancelled.current) {
+        userCancelled.current = false;
+        return;
+      }
+      clearKeepAlive();
       setSpeakingId(null);
       setSpeechState('idle');
     };
@@ -83,18 +123,27 @@ export function LessonPage() {
   function buildChunks(title: string, body: string): string[] {
     const text = `${title}. ${toPlainText(body)}`;
     const sentences = text.split(/(?<=[.!?])\s+/);
-    const chunks: string[] = [];
+    const out: string[] = [];
     let cur = '';
     for (const s of sentences) {
       if ((cur + ' ' + s).length > 200 && cur) {
-        chunks.push(cur.trim());
+        out.push(cur.trim());
         cur = s;
       } else {
         cur = cur ? cur + ' ' + s : s;
       }
     }
-    if (cur.trim()) chunks.push(cur.trim());
-    return chunks;
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+
+  async function waitForCancel(maxMs = 400) {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const start = Date.now();
+    while (synth.speaking && Date.now() - start < maxMs) {
+      await new Promise((r) => setTimeout(r, 30));
+    }
   }
 
   async function startArticleFromBeginning(
@@ -109,53 +158,45 @@ export function LessonPage() {
       );
       return;
     }
-    // Hard reset before queueing — cancel old utterance and wait for the
-    // engine to actually clear (mobile Safari and some Android browsers
-    // don't honour cancel() instantly).
-    speechQueue.current = [];
+    clearKeepAlive();
+    userCancelled.current = true;
     synth.cancel();
-    for (let i = 0; i < 12 && synth.speaking; i++) {
-      await new Promise((r) => setTimeout(r, 30));
-    }
-    speechQueue.current = buildChunks(title, body);
+    await waitForCancel();
+    chunks.current = buildChunks(title, body);
+    chunkIndex.current = 0;
     setSpeakingId(articleId);
     setSpeechState('playing');
     trackEvent('lesson-read-aloud');
-    try {
-      synth.resume();
-    } catch {
-      /* ignore */
-    }
-    speakNextChunk();
+    startKeepAlive();
+    speakChunkAt(0);
   }
 
   function pauseSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    try {
-      synth.pause();
-    } catch {
-      /* ignore */
-    }
+    clearKeepAlive();
+    userCancelled.current = true;
+    synth.cancel();
     setSpeechState('paused');
   }
 
-  function resumeSpeaking() {
+  async function resumeSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    try {
-      synth.resume();
-    } catch {
-      /* ignore */
-    }
+    await waitForCancel();
     setSpeechState('playing');
+    startKeepAlive();
+    speakChunkAt(chunkIndex.current);
   }
 
   function stopSpeaking() {
     const synth = window.speechSynthesis;
     if (!synth) return;
+    clearKeepAlive();
+    userCancelled.current = true;
     synth.cancel();
-    speechQueue.current = [];
+    chunks.current = [];
+    chunkIndex.current = 0;
     setSpeakingId(null);
     setSpeechState('idle');
   }
@@ -165,15 +206,24 @@ export function LessonPage() {
     setPhase('learn');
     setScore(0);
     // Stop any in-progress narration when switching lessons.
+    clearKeepAlive();
+    userCancelled.current = true;
     window.speechSynthesis?.cancel();
-    speechQueue.current = [];
+    chunks.current = [];
+    chunkIndex.current = 0;
     setSpeakingId(null);
     setSpeechState('idle');
     if (findLesson(lessonId)) trackEvent(`lesson-started: ${lessonId}`);
   }, [lessonId]);
 
   // Stop any read-aloud when leaving the lesson.
-  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+  useEffect(
+    () => () => {
+      clearKeepAlive();
+      window.speechSynthesis?.cancel();
+    },
+    [],
+  );
 
   const articles = useMemo(
     () => (found ? getArticles(found.lesson.articleIds) : []),
@@ -313,10 +363,7 @@ export function LessonPage() {
 
           <button
             onClick={() => {
-              window.speechSynthesis?.cancel();
-              speechQueue.current = [];
-              setSpeakingId(null);
-              setSpeechState('idle');
+              stopSpeaking();
               setPhase('quiz');
               window.scrollTo(0, 0);
             }}
