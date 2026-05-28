@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  ChevronLeft,
   GraduationCap,
   Pause,
   Play,
@@ -14,6 +15,7 @@ import {
   Volume2,
 } from 'lucide-react';
 import { findLesson, lessonOrder } from '../course/courseData';
+import { buildSlidesForLesson } from '../course/buildSlides';
 import { trackEvent } from '../lib/analytics';
 import { getArticles, toPlainText } from '../lib/content';
 import { Quiz } from '../course/Quiz';
@@ -41,7 +43,10 @@ export function LessonPage() {
 
   const [phase, setPhase] = useState<Phase>('learn');
   const [score, setScore] = useState(0);
-  // Track per-article speech state. Only one article can be active at a time.
+  // Slide-by-slide lesson player — currentSlide is the active index into
+  // the lesson's slide deck (built from the lesson's articles).
+  const [currentSlide, setCurrentSlide] = useState(0);
+  // Track per-slide speech state. Only one slide can be active at a time.
   type SpeechState = 'idle' | 'playing' | 'paused';
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [speechState, setSpeechState] = useState<SpeechState>('idle');
@@ -142,8 +147,8 @@ export function LessonPage() {
     }
   }
 
-  async function startArticleFromBeginning(
-    articleId: string,
+  async function startSlideFromBeginning(
+    slideKey: string,
     title: string,
     body: string,
   ) {
@@ -160,7 +165,7 @@ export function LessonPage() {
     await waitForCancel();
     chunks.current = buildChunks(title, body);
     chunkIndex.current = 0;
-    setSpeakingId(articleId);
+    setSpeakingId(slideKey);
     setSpeechState('playing');
     trackEvent('lesson-read-aloud');
     startKeepAlive();
@@ -201,6 +206,7 @@ export function LessonPage() {
     window.scrollTo(0, 0);
     setPhase('learn');
     setScore(0);
+    setCurrentSlide(0);
     // Stop any in-progress narration when switching lessons.
     clearKeepAlive();
     epoch.current++;
@@ -225,6 +231,18 @@ export function LessonPage() {
     () => (found ? getArticles(found.lesson.articleIds) : []),
     [found],
   );
+  const slides = useMemo(() => buildSlidesForLesson(articles), [articles]);
+  const slide = slides[currentSlide];
+  const slideArticle = slide
+    ? articles.find((a) => a.id === slide.articleId)
+    : null;
+
+  function goToSlide(target: number) {
+    if (target < 0 || target >= slides.length) return;
+    stopSpeaking();
+    setCurrentSlide(target);
+    window.scrollTo(0, 0);
+  }
 
   if (!found) {
     return (
@@ -285,88 +303,149 @@ export function LessonPage() {
         {lesson.quiz.length} questions
       </p>
 
-      {phase === 'learn' && (
+      {phase === 'learn' && slide && (
         <div className="mt-5">
-          {articles.map((a) => (
-            <article
-              key={a.id}
-              className="mb-5 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6"
-            >
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <h2 className="min-w-0 flex-1 text-lg font-bold text-slate-900 dark:text-white">
-                  {a.title}
-                </h2>
-                {speakingId !== a.id && (
+          {/* Top progress dots — one segment per slide */}
+          <div className="mb-3 flex gap-1">
+            {slides.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full transition-all ${
+                  i < currentSlide
+                    ? 'bg-teal-600'
+                    : i === currentSlide
+                      ? 'bg-teal-500'
+                      : 'bg-slate-200 dark:bg-slate-700'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Slide caption */}
+          <p className="mb-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            <span>
+              Slide {currentSlide + 1} of {slides.length}
+            </span>
+            {slides.length > 1 && (
+              <>
+                <span aria-hidden>·</span>
+                <span className="normal-case tracking-normal text-slate-500">
+                  {slide.articleTitle}
+                </span>
+              </>
+            )}
+          </p>
+
+          {/* Slide card */}
+          <article className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <h2
+                className={`min-w-0 flex-1 ${
+                  slide.isIntro
+                    ? 'text-2xl font-extrabold'
+                    : 'text-lg font-bold'
+                } text-slate-900 dark:text-white`}
+              >
+                {slide.title}
+              </h2>
+              {speakingId !== slide.key && (
+                <button
+                  onClick={() =>
+                    startSlideFromBeginning(slide.key, slide.title, slide.body)
+                  }
+                  className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                >
+                  <Volume2 size={13} /> Listen
+                </button>
+              )}
+              {speakingId === slide.key && speechState === 'playing' && (
+                <>
+                  <button
+                    onClick={pauseSpeaking}
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+                  >
+                    <Pause size={13} /> Pause
+                  </button>
+                  <button
+                    onClick={stopSpeaking}
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+                  >
+                    <Square size={13} /> Stop
+                  </button>
+                </>
+              )}
+              {speakingId === slide.key && speechState === 'paused' && (
+                <>
+                  <button
+                    onClick={resumeSpeaking}
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+                  >
+                    <Play size={13} /> Resume
+                  </button>
                   <button
                     onClick={() =>
-                      startArticleFromBeginning(a.id, a.title, a.body)
+                      startSlideFromBeginning(slide.key, slide.title, slide.body)
                     }
-                    className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
                   >
-                    <Volume2 size={13} /> Listen
+                    <RotateCcw size={13} /> Restart
                   </button>
-                )}
-                {speakingId === a.id && speechState === 'playing' && (
-                  <>
-                    <button
-                      onClick={pauseSpeaking}
-                      className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
-                    >
-                      <Pause size={13} /> Pause
-                    </button>
-                    <button
-                      onClick={stopSpeaking}
-                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
-                    >
-                      <Square size={13} /> Stop
-                    </button>
-                  </>
-                )}
-                {speakingId === a.id && speechState === 'paused' && (
-                  <>
-                    <button
-                      onClick={resumeSpeaking}
-                      className="flex shrink-0 items-center gap-1 rounded-lg border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
-                    >
-                      <Play size={13} /> Resume
-                    </button>
-                    <button
-                      onClick={() =>
-                        startArticleFromBeginning(a.id, a.title, a.body)
-                      }
-                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
-                    >
-                      <RotateCcw size={13} /> Restart
-                    </button>
-                    <button
-                      onClick={stopSpeaking}
-                      className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
-                    >
-                      <Square size={13} /> Stop
-                    </button>
-                  </>
-                )}
+                  <button
+                    onClick={stopSpeaking}
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-rose-400 dark:border-slate-700 dark:text-slate-300"
+                  >
+                    <Square size={13} /> Stop
+                  </button>
+                </>
+              )}
+              {slideArticle && (
                 <button
-                  onClick={() => openTutor(a)}
+                  onClick={() => openTutor(slideArticle)}
                   className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 dark:border-slate-700 dark:text-slate-300"
                 >
                   <Sparkles size={13} /> Tutor
                 </button>
-              </div>
-              <MarkdownRenderer markdown={a.body} />
-            </article>
-          ))}
+              )}
+            </div>
+            {slide.body ? (
+              <MarkdownRenderer markdown={slide.body} />
+            ) : (
+              <p className="text-sm italic text-slate-500">
+                Tap Next to begin.
+              </p>
+            )}
+          </article>
 
-          <button
-            onClick={() => {
-              stopSpeaking();
-              setPhase('quiz');
-              window.scrollTo(0, 0);
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-bold text-white hover:bg-teal-800"
-          >
-            Start the quiz <ArrowRight size={16} />
-          </button>
+          {/* Navigation row */}
+          <div className="mt-5 flex items-center gap-2">
+            <button
+              onClick={() => goToSlide(currentSlide - 1)}
+              disabled={currentSlide === 0}
+              className="flex shrink-0 items-center gap-1 rounded-xl border border-slate-300 px-3 py-3 text-sm font-semibold text-slate-600 transition hover:border-teal-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            {currentSlide < slides.length - 1 ? (
+              <button
+                onClick={() => goToSlide(currentSlide + 1)}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-bold text-white hover:bg-teal-800"
+              >
+                Next <ArrowRight size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  stopSpeaking();
+                  setPhase('quiz');
+                  window.scrollTo(0, 0);
+                }}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-bold text-white hover:bg-teal-800"
+              >
+                Start the quiz <ArrowRight size={16} />
+              </button>
+            )}
+          </div>
         </div>
       )}
 

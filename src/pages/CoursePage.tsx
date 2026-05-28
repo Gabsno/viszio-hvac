@@ -40,6 +40,18 @@ export function CoursePage() {
     return completed.includes(order[idx - 1].lessonId);
   }
 
+  // The next lesson to do: first unlocked, uncompleted lesson in order.
+  const nextEntry = order.find(
+    (o) => !completed.includes(o.lessonId) && isUnlocked(o.lessonId),
+  );
+  const nextModule = nextEntry
+    ? COURSE.find((m) => m.lessons.some((l) => l.id === nextEntry.lessonId))
+    : null;
+  const nextLesson = nextEntry
+    ? nextModule?.lessons.find((l) => l.id === nextEntry.lessonId)
+    : null;
+  const hasStartedAny = completed.length > 0;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
       <div className="flex items-center gap-2.5">
@@ -55,6 +67,33 @@ export function CoursePage() {
           </p>
         </div>
       </div>
+
+      {/* Featured "Continue learning" card */}
+      {nextLesson && nextModule && (
+        <Link
+          to={`/course/${nextLesson.id}`}
+          className="mt-4 block overflow-hidden rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-600 to-teal-700 p-5 text-white shadow-sm transition hover:from-teal-700 hover:to-teal-800 dark:border-teal-800"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-wide text-teal-100">
+            {hasStartedAny ? 'Continue learning' : 'Start learning'} ·{' '}
+            {nextModule.title}
+          </p>
+          <h2 className="mt-1 text-xl font-extrabold leading-tight">
+            {nextLesson.title}
+          </h2>
+          <p className="mt-1 text-xs text-teal-100">
+            {nextLesson.xp} XP · {nextLesson.quiz.length} questions
+          </p>
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-xs font-medium text-teal-100">
+              Slide-by-slide lesson · then a quick quiz
+            </span>
+            <span className="flex items-center gap-1 rounded-full bg-white px-4 py-1.5 text-xs font-bold text-teal-700">
+              <Play size={13} fill="currentColor" /> Start
+            </span>
+          </div>
+        </Link>
+      )}
 
       {/* Stat strip */}
       <div className="mt-4 grid grid-cols-3 gap-3">

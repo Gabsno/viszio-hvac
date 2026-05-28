@@ -11,16 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-23-listen-player-v3',
+    id: '2026-05-28-slide-lessons',
     date: 'May 2026',
-    title: 'Better listening, more voice control',
+    title: 'Slide-paced lessons + Continue learning',
     items: [
-      'Listen now has full player controls — Pause, Resume, Restart, and Stop instead of a single toggle. Resume reliably picks up where you paused, and a keep-alive prevents the silent 15-second auto-stop that some browsers ship with.',
-      'Six one-tap voice presets in Settings → Accessibility: Narrator, Lecturer, Coach, Storyteller, Calm Guide and Bright Tutor.',
-      'Reading speed (0.6×–1.6×) and pitch sliders for fine-tuning beyond the presets.',
-      'Listen button now appears on every article inside course lessons — not just the library.',
-      'Voice picker filters to English voices only, and tags each one [local] / [online] so you know which actually sound distinct.',
-      'Test button reports which voice the browser really used — silent fallbacks are no longer invisible.',
+      'Course lessons are now slide-by-slide. Each article splits into bite-sized slides — one concept per screen, progress dots at the top, big Next button at the bottom. No more scrolling through a wall of text before the quiz.',
+      "Course page now features a Continue Learning card at the top — one tap takes you straight to the next lesson you should do, so you never lose your place.",
+      'Listen, Pause, Resume, Restart, Stop on every slide — and switching slides automatically stops the previous narration.',
+      'Tutor stays one tap away on every slide too.',
+      'All the earlier listening upgrades still apply: six voice presets in Settings, speed/pitch sliders, English-only voice picker, and the keep-alive that prevents the 15-second auto-stop bug.',
     ],
   },
 ];
