@@ -75,6 +75,72 @@ export interface QuizQuestion {
   explanation: string;
 }
 
+// ---- Interactive challenges ----
+// Challenges run between the content slides and the multiple-choice quiz.
+// Each one is a single tappable / fillable interaction with an instant
+// right/wrong response and a short explanation. Designed to feel like the
+// active practice in Mimo / Learn JavaScript.
+
+export type ChallengeType =
+  | 'numeric'
+  | 'fill-blank'
+  | 'order'
+  | 'match'
+  | 'multi-select';
+
+export interface BaseChallenge {
+  id: string;
+  type: ChallengeType;
+  prompt: string;
+  explanation?: string;
+}
+
+export interface NumericChallenge extends BaseChallenge {
+  type: 'numeric';
+  /** Expected numeric answer. */
+  answer: number;
+  /** Optional unit label shown beside the input (kW, L/s, etc.). */
+  unit?: string;
+  /** Fractional tolerance — 0.05 means ±5%. Defaults to 0.05. */
+  tolerance?: number;
+  /** Optional formula or hint shown above the input. */
+  hint?: string;
+}
+
+export interface FillBlankChallenge extends BaseChallenge {
+  type: 'fill-blank';
+  /** Expected answer (case-insensitive). */
+  answer: string;
+  /** Other accepted answers (synonyms). */
+  acceptableAnswers?: string[];
+  /** Optional placeholder shown inside the input. */
+  placeholder?: string;
+}
+
+export interface OrderChallenge extends BaseChallenge {
+  type: 'order';
+  /** Items in the correct final order. Shown shuffled to the user. */
+  items: string[];
+}
+
+export interface MatchChallenge extends BaseChallenge {
+  type: 'match';
+  /** Pairs the user must connect. Both columns shown shuffled. */
+  pairs: { left: string; right: string }[];
+}
+
+export interface MultiSelectChallenge extends BaseChallenge {
+  type: 'multi-select';
+  options: { text: string; correct: boolean }[];
+}
+
+export type Challenge =
+  | NumericChallenge
+  | FillBlankChallenge
+  | OrderChallenge
+  | MatchChallenge
+  | MultiSelectChallenge;
+
 export interface Lesson {
   id: string;
   title: string;
@@ -83,6 +149,8 @@ export interface Lesson {
   /** XP awarded for completing the lesson. */
   xp: number;
   quiz: QuizQuestion[];
+  /** Optional interactive challenges shown before the quiz. */
+  challenges?: Challenge[];
 }
 
 export interface CourseModule {

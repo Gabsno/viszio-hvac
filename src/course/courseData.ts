@@ -49,6 +49,48 @@ export const COURSE: CourseModule[] = [
               'Condensing moisture releases latent heat; dehumidification removes that latent load.',
           },
         ],
+        challenges: [
+          {
+            id: 'l1-1-c1',
+            type: 'fill-blank',
+            prompt:
+              'The HVAC industry uses two words for the two kinds of heat. Energy that changes temperature without changing moisture is called ___ heat.',
+            answer: 'sensible',
+            placeholder: 'one word',
+            explanation:
+              'Sensible heat changes dry-bulb temperature. Latent heat is the partner term — it changes moisture content without changing temperature.',
+          },
+          {
+            id: 'l1-1-c2',
+            type: 'multi-select',
+            prompt:
+              'Which of these are properties shown on a psychrometric chart? (Pick all that apply.)',
+            options: [
+              { text: 'Dry-bulb temperature', correct: true },
+              { text: 'Wet-bulb temperature', correct: true },
+              { text: 'Humidity ratio', correct: true },
+              { text: 'Refrigerant pressure', correct: false },
+              { text: 'Enthalpy', correct: true },
+              { text: 'Pipe friction loss', correct: false },
+            ],
+            explanation:
+              'A psychrometric chart maps moist-air properties: dry-bulb, wet-bulb, humidity ratio, relative humidity, enthalpy and specific volume. Refrigerant pressure lives on a refrigerant chart; pipe friction on a Moody diagram.',
+          },
+          {
+            id: 'l1-1-c3',
+            type: 'match',
+            prompt:
+              'Match each psychrometric process to the direction it moves the air state on the chart.',
+            pairs: [
+              { left: 'Sensible cooling', right: 'Left along constant humidity' },
+              { left: 'Sensible heating', right: 'Right along constant humidity' },
+              { left: 'Humidification', right: 'Up along constant temperature' },
+              { left: 'Dehumidification', right: 'Down along constant temperature' },
+            ],
+            explanation:
+              'Temperature changes move horizontally; moisture changes move vertically. Most real cooling coils combine both — down and to the left.',
+          },
+        ],
       },
       {
         id: 'l1-2',
@@ -157,6 +199,32 @@ export const COURSE: CourseModule[] = [
               'CFM (cubic feet per minute) is the imperial volumetric airflow unit; L/s is the metric equivalent.',
           },
         ],
+        challenges: [
+          {
+            id: 'l1-4-c1',
+            type: 'numeric',
+            prompt:
+              'Convert: a chiller is rated 30 tons of refrigeration. How many kilowatts of cooling capacity is that?',
+            hint: '1 ton of refrigeration = 3.517 kW',
+            answer: 105.5,
+            unit: 'kW',
+            tolerance: 0.03,
+            explanation:
+              '30 tons × 3.517 kW/ton = 105.5 kW. Always sanity-check tonnage against kW when reading datasheets — vendors mix the two units freely.',
+          },
+          {
+            id: 'l1-4-c2',
+            type: 'numeric',
+            prompt:
+              'A supply fan delivers 5,000 CFM. What is that in litres per second (L/s)?',
+            hint: '1 CFM ≈ 0.4719 L/s',
+            answer: 2360,
+            unit: 'L/s',
+            tolerance: 0.03,
+            explanation:
+              '5,000 × 0.4719 ≈ 2,360 L/s. SMACNA and ASHRAE often use CFM; consultants in Ghana usually specify L/s — convert before you compare.',
+          },
+        ],
       },
     ],
   },
@@ -202,6 +270,35 @@ export const COURSE: CourseModule[] = [
             answer: 'humidity',
             explanation:
               'Oversized units short-cycle and run too little to dehumidify, leaving spaces cool but clammy.',
+          },
+        ],
+        challenges: [
+          {
+            id: 'l2-1-c1',
+            type: 'order',
+            prompt:
+              'Put a cooling load calculation in the correct order — drag each step up or down until it lines up.',
+            items: [
+              'Collect building geometry, orientation, occupancy and construction details',
+              'Pick the design outdoor and indoor conditions from the climate data',
+              'Calculate envelope gains (walls, roof, glazing, infiltration)',
+              'Calculate internal gains (people, lighting, equipment)',
+              'Add the outdoor-air ventilation load',
+              'Apply a safety margin and pick equipment from the manufacturer',
+            ],
+            explanation:
+              "You can't calculate gains without geometry, you can't pick design conditions without knowing what climate the building is in, and you can't pick equipment until you have a total load. Order matters because each step depends on the last.",
+          },
+          {
+            id: 'l2-1-c2',
+            type: 'fill-blank',
+            prompt:
+              'A common Ghana-area rule of thumb for office cooling load is roughly ___ W per square metre. (Type just the number.)',
+            answer: '180',
+            acceptableAnswers: ['200', '150', '170', '160'],
+            placeholder: 'Number only',
+            explanation:
+              'For Accra/Tema offices a 150-200 W/m² rule of thumb gets you in the right ballpark for early concept work. Anything outside 100-300 W/m² should make you double-check assumptions.',
           },
         ],
       },
@@ -1019,6 +1116,49 @@ export const COURSE: CourseModule[] = [
             answer: 'parallel',
             explanation:
               'Opposed-blade dampers give a more linear, predictable flow characteristic than parallel-blade dampers.',
+          },
+        ],
+        challenges: [
+          {
+            id: 'l9-1-c1',
+            type: 'multi-select',
+            prompt:
+              'Pick every place a volume control damper SHOULD live in a typical air system.',
+            options: [
+              { text: 'At every branch tap', correct: true },
+              { text: 'Before each terminal box', correct: true },
+              { text: 'Inside a fire-rated wall penetration', correct: false },
+              { text: 'In the discharge of an exhaust fan to stop backdraft', correct: false },
+              { text: 'On long runs where balance is hard to predict', correct: true },
+            ],
+            explanation:
+              'VCDs are for balancing — not for fire or backdraft. Fire-rated penetrations need a fire damper, exhaust-fan backflow needs a backdraft damper.',
+          },
+          {
+            id: 'l9-1-c2',
+            type: 'match',
+            prompt:
+              'Match each damper blade arrangement to what it does best.',
+            pairs: [
+              {
+                left: 'Opposed-blade (OBD)',
+                right: 'Modulating control — linear over most of stroke',
+              },
+              {
+                left: 'Parallel-blade (PBD)',
+                right: 'Two-position open/closed isolation',
+              },
+              {
+                left: 'Iris damper',
+                right: 'Fine balancing on round duct branches',
+              },
+              {
+                left: 'Butterfly damper',
+                right: 'Compact shut-off in tight spaces',
+              },
+            ],
+            explanation:
+              'Opposed-blade is the workhorse for modulating control. Parallel-blade is cheaper but deflects airflow sideways — fine for on/off, bad for modulation. Iris and butterfly are specialty geometries.',
           },
         ],
       },

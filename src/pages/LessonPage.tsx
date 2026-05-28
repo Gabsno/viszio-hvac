@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { findLesson, lessonOrder } from '../course/courseData';
 import { buildSlidesForLesson } from '../course/buildSlides';
+import { ChallengeView } from '../course/Challenge';
 import { trackEvent } from '../lib/analytics';
 import { getArticles, toPlainText } from '../lib/content';
 import { Quiz } from '../course/Quiz';
@@ -24,7 +25,7 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useUIStore } from '../store/useUIStore';
 
-type Phase = 'learn' | 'quiz' | 'result';
+type Phase = 'learn' | 'challenges' | 'quiz' | 'result';
 
 export function LessonPage() {
   const { lessonId = '' } = useParams();
@@ -46,6 +47,9 @@ export function LessonPage() {
   // Slide-by-slide lesson player — currentSlide is the active index into
   // the lesson's slide deck (built from the lesson's articles).
   const [currentSlide, setCurrentSlide] = useState(0);
+  // Interactive challenges shown between slides and quiz.
+  const [currentChallenge, setCurrentChallenge] = useState(0);
+  const [challengeStreak, setChallengeStreak] = useState(0);
   // Track per-slide speech state. Only one slide can be active at a time.
   type SpeechState = 'idle' | 'playing' | 'paused';
   const [speakingId, setSpeakingId] = useState<string | null>(null);
@@ -207,6 +211,8 @@ export function LessonPage() {
     setPhase('learn');
     setScore(0);
     setCurrentSlide(0);
+    setCurrentChallenge(0);
+    setChallengeStreak(0);
     // Stop any in-progress narration when switching lessons.
     clearKeepAlive();
     epoch.current++;
@@ -437,15 +443,78 @@ export function LessonPage() {
               <button
                 onClick={() => {
                   stopSpeaking();
-                  setPhase('quiz');
+                  if (lesson.challenges && lesson.challenges.length > 0) {
+                    setPhase('challenges');
+                  } else {
+                    setPhase('quiz');
+                  }
                   window.scrollTo(0, 0);
                 }}
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-sm font-bold text-white hover:bg-teal-800"
               >
-                Start the quiz <ArrowRight size={16} />
+                {lesson.challenges && lesson.challenges.length > 0
+                  ? 'Try it out'
+                  : 'Start the quiz'}{' '}
+                <ArrowRight size={16} />
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {phase === 'challenges' && lesson.challenges && (
+        <div className="mt-5">
+          {/* Top progress dots for challenges */}
+          <div className="mb-3 flex gap-1">
+            {lesson.challenges.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full transition-all ${
+                  i < currentChallenge
+                    ? 'bg-ghana-500'
+                    : i === currentChallenge
+                      ? 'bg-ghana-400'
+                      : 'bg-slate-200 dark:bg-slate-700'
+                }`}
+              />
+            ))}
+          </div>
+
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            Practice {currentChallenge + 1} of {lesson.challenges.length}
+            {challengeStreak > 0
+              ? ` · ${challengeStreak} correct streak`
+              : ''}
+          </p>
+
+          <ChallengeView
+            key={lesson.challenges[currentChallenge].id}
+            challenge={lesson.challenges[currentChallenge]}
+            onComplete={(correct) => {
+              trackEvent(
+                `challenge-${correct ? 'correct' : 'incorrect'}: ${lesson.challenges![currentChallenge].id}`,
+              );
+              setChallengeStreak((s) => (correct ? s + 1 : 0));
+              if (currentChallenge < lesson.challenges!.length - 1) {
+                setCurrentChallenge((c) => c + 1);
+                window.scrollTo(0, 0);
+              } else {
+                setPhase('quiz');
+                window.scrollTo(0, 0);
+              }
+            }}
+          />
+
+          {/* Skip option in case user is stuck */}
+          <button
+            onClick={() => {
+              setPhase('quiz');
+              window.scrollTo(0, 0);
+            }}
+            className="mt-3 w-full text-center text-xs font-medium text-slate-500 hover:text-teal-700"
+          >
+            Skip practice and go straight to the quiz
+          </button>
         </div>
       )}
 

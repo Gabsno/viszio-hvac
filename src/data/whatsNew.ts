@@ -11,15 +11,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-slide-lessons',
+    id: '2026-05-28-interactive-challenges',
     date: 'May 2026',
-    title: 'Slide-paced lessons + Continue learning',
+    title: 'Interactive practice challenges',
     items: [
-      'Course lessons are now slide-by-slide. Each article splits into bite-sized slides — one concept per screen, progress dots at the top, big Next button at the bottom. No more scrolling through a wall of text before the quiz.',
-      "Course page now features a Continue Learning card at the top — one tap takes you straight to the next lesson you should do, so you never lose your place.",
-      'Listen, Pause, Resume, Restart, Stop on every slide — and switching slides automatically stops the previous narration.',
-      'Tutor stays one tap away on every slide too.',
-      'All the earlier listening upgrades still apply: six voice presets in Settings, speed/pitch sliders, English-only voice picker, and the keep-alive that prevents the 15-second auto-stop bug.',
+      'Lessons now have a Practice phase between the slides and the quiz. Five new challenge types: type a number with units (e.g. convert 30 tons to kW), fill in a missing word, reorder a sequence of operations, match terms to definitions, and select all that apply.',
+      'Live in three demo lessons to start: "What psychrometrics is" (Module 1), "Airflow & units" (Module 1), "The load calculation process" (Module 2), and "Volume & balancing dampers" (Module 9). More will be added across all modules.',
+      'Each challenge gives instant feedback with an explanation. Tap Skip practice if you want to jump straight to the quiz.',
+      'Plus everything from before: slide-by-slide lessons, Continue Learning card, full Listen player controls, six voice presets, speed/pitch sliders.',
     ],
   },
 ];
