@@ -2,22 +2,17 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  Award,
   BookText,
   Check,
   Calculator,
   Clock,
-  Flame,
   GraduationCap,
   Lock,
   Play,
   Sparkles,
-  Star,
-  Trophy,
 } from 'lucide-react';
 import {
   COURSE,
-  TROPHIES,
   lessonOrder,
   totalLessons,
 } from '../course/courseData';
@@ -27,23 +22,11 @@ import { GLOSSARY } from '../data/glossary';
 import { Icon } from '../components/Icon';
 import { useProgressStore } from '../store/useProgressStore';
 
-const TROPHY_ICONS: Record<string, React.ReactNode> = {
-  Star: <Star size={18} />,
-  Flame: <Flame size={18} />,
-  Award: <Award size={18} />,
-  Trophy: <Trophy size={18} />,
-  GraduationCap: <GraduationCap size={18} />,
-};
-
 type Tab = 'lessons' | 'tools' | 'glossary';
 
 export function CoursePage() {
   const completed = useProgressStore((s) => s.completedLessons);
   const quizScores = useProgressStore((s) => s.quizScores);
-  const xp = useProgressStore((s) => s.xp);
-  const streak = useProgressStore((s) => s.currentStreak);
-  const longest = useProgressStore((s) => s.longestStreak);
-  const trophies = useProgressStore((s) => s.trophies);
 
   const [tab, setTab] = useState<Tab>('lessons');
   const [glossarySearch, setGlossarySearch] = useState('');
@@ -128,42 +111,20 @@ export function CoursePage() {
         </Link>
       )}
 
-      {/* Stat strip */}
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-900">
-          <Flame size={18} className="mx-auto text-ghana-500" />
-          <p className="mt-1 text-lg font-extrabold text-slate-900 dark:text-white">
-            {streak}
-          </p>
-          <p className="text-[11px] text-slate-500">
-            Day streak{longest > streak ? ` · best ${longest}` : ''}
-          </p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-900">
-          <Star size={18} className="mx-auto text-teal-600" />
-          <p className="mt-1 text-lg font-extrabold text-slate-900 dark:text-white">
-            {xp}
-          </p>
-          <p className="text-[11px] text-slate-500">XP earned</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-900">
-          <Trophy size={18} className="mx-auto text-amber-500" />
-          <p className="mt-1 text-lg font-extrabold text-slate-900 dark:text-white">
-            {trophies.length}/{TROPHIES.length}
-          </p>
-          <p className="text-[11px] text-slate-500">Trophies</p>
-        </div>
-      </div>
-
-      {/* Overall progress */}
-      <div className="mt-3">
-        <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+      {/* Compact progress + jump-to-profile */}
+      <div className="mt-3 flex items-center gap-3">
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <div
             className="h-full rounded-full bg-gradient-to-r from-teal-500 to-teal-700 transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
-        <p className="mt-1 text-right text-xs text-slate-400">{pct}% complete</p>
+        <Link
+          to="/profile"
+          className="shrink-0 text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300"
+        >
+          {pct}% · Profile →
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -192,60 +153,8 @@ export function CoursePage() {
       {/* Tab: Lessons */}
       {tab === 'lessons' && (
         <>
-          {/* Trophies */}
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-            <p className="mb-2.5 text-xs font-bold uppercase tracking-wide text-slate-400">
-              Trophies
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {TROPHIES.map((t) => {
-                const earned = trophies.includes(t.id);
-                return (
-                  <div
-                    key={t.id}
-                    title={`${t.title} — ${t.description}`}
-                    className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold ${
-                      earned
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                        : 'bg-slate-100 text-slate-400 dark:bg-slate-800'
-                    }`}
-                  >
-                    {TROPHY_ICONS[t.icon] ?? <Trophy size={18} />}
-                    {t.title}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Certificate link */}
-          <Link
-            to="/certificate"
-            className={`mt-4 flex items-center gap-3 rounded-xl border p-4 transition ${
-              pct === 100
-                ? 'border-teal-400 bg-teal-50 hover:border-teal-500 dark:border-teal-700 dark:bg-teal-950/40'
-                : 'border-slate-200 bg-white hover:border-teal-400 dark:border-slate-800 dark:bg-slate-900'
-            }`}
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-white">
-              <Award size={20} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="font-bold text-slate-900 dark:text-white">
-                {pct === 100
-                  ? 'Your certificate is ready'
-                  : 'Course completion certificate'}
-              </p>
-              <p className="text-xs text-slate-500">
-                {pct === 100
-                  ? 'Add your name and print or save it as a PDF.'
-                  : `Finish all ${lessonTotal} lessons to unlock it — ${pct}% done.`}
-              </p>
-            </div>
-          </Link>
-
           {/* Snake-style module/lesson tree */}
-          <div className="mt-6 space-y-7">
+          <div className="mt-5 space-y-7">
             {COURSE.map((module) => {
               const moduleDone = module.lessons.every((l) =>
                 completed.includes(l.id),

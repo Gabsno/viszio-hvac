@@ -21,6 +21,7 @@ import { GlossaryPage } from './pages/GlossaryPage';
 import { FlashcardsPage } from './pages/FlashcardsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LoginPage } from './pages/LoginPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { useSettingsStore } from './store/useSettingsStore';
 import { initAnalytics, trackPage } from './lib/analytics';
 
@@ -68,6 +69,7 @@ export default function App() {
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/flashcards" element={<FlashcardsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

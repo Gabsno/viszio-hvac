@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Search, Settings, Moon, Sun } from 'lucide-react';
+import { Menu, Search, Settings, Moon, Sun, User } from 'lucide-react';
 import { Logo } from './Logo';
 import { SearchBar } from './SearchBar';
 import { ModeSwitcher } from './ModeSwitcher';
@@ -59,6 +59,18 @@ export function TopBar({ showMenu = true }: Props) {
         >
           {theme === 'light' ? <Moon size={19} /> : <Sun size={19} />}
         </button>
+
+        <Link
+          to="/profile"
+          className={`hidden rounded-lg p-2 hover:bg-slate-100 sm:block dark:hover:bg-slate-800 ${
+            pathname === '/profile'
+              ? 'text-teal-700 dark:text-teal-400'
+              : 'text-slate-600 dark:text-slate-300'
+          }`}
+          aria-label="Profile"
+        >
+          <User size={19} />
+        </Link>
 
         <Link
           to="/settings"

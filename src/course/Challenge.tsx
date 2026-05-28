@@ -9,6 +9,7 @@ import {
   Square as SquareIcon,
 } from 'lucide-react';
 import type { Challenge } from '../types';
+import { tapError, tapSuccess } from '../lib/haptics';
 
 interface Props {
   challenge: Challenge;
@@ -50,6 +51,8 @@ export function ChallengeView({ challenge, onComplete }: Props) {
             onCheck={(ok) => {
               setCorrect(ok);
               setSubmitted(true);
+              if (ok) tapSuccess();
+              else tapError();
             }}
           />
         )}
@@ -60,6 +63,8 @@ export function ChallengeView({ challenge, onComplete }: Props) {
             onCheck={(ok) => {
               setCorrect(ok);
               setSubmitted(true);
+              if (ok) tapSuccess();
+              else tapError();
             }}
           />
         )}
@@ -70,6 +75,8 @@ export function ChallengeView({ challenge, onComplete }: Props) {
             onCheck={(ok) => {
               setCorrect(ok);
               setSubmitted(true);
+              if (ok) tapSuccess();
+              else tapError();
             }}
           />
         )}
@@ -80,6 +87,8 @@ export function ChallengeView({ challenge, onComplete }: Props) {
             onCheck={(ok) => {
               setCorrect(ok);
               setSubmitted(true);
+              if (ok) tapSuccess();
+              else tapError();
             }}
           />
         )}
@@ -90,6 +99,8 @@ export function ChallengeView({ challenge, onComplete }: Props) {
             onCheck={(ok) => {
               setCorrect(ok);
               setSubmitted(true);
+              if (ok) tapSuccess();
+              else tapError();
             }}
           />
         )}

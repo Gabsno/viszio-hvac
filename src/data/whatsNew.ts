@@ -11,15 +11,16 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-course-bundle',
+    id: '2026-05-28-mobile-shell',
     date: 'May 2026',
-    title: 'Course tabs, snake-path lessons, share & duration',
+    title: 'Mobile-app feel — bottom nav, Profile, page transitions',
     items: [
-      'New tabs at the top of the Course page — Lessons, Tools, Glossary — so calculators and term lookups are one tap away while you are mid-course.',
-      'Lesson tree is now a snake-style path: lessons zig-zag down the page with circular nodes, the next lesson pulses, done lessons get an emerald checkmark, locked lessons are greyed.',
-      'Every lesson card now shows a duration (e.g. 8 min) computed from its articles plus practice and quiz time.',
-      'Share button on every lesson — uses your phone’s native share sheet on mobile, falls back to copying the link on desktop.',
-      'Practice challenges still live in modules 1, 2 and 9. More coming.',
+      'Persistent bottom navigation on mobile — one tap between Home, Course, Library, Tools and Profile. The app finally feels like a real native app instead of a website.',
+      'New Profile page (the rightmost tab) brings together your streak, XP, trophies, certificate, bookmarks, name and the reset button. The Course page is now decluttered — it focuses on the snake-path lesson tree.',
+      'Subtle fade transition between pages so route changes feel intentional, not jarring.',
+      'Haptic feedback on correct and wrong answers in the practice phase, on supported phones.',
+      'The "new version" banner is now a prominent top bar (instead of an easy-to-miss corner toast) and clears the service-worker cache when you tap Refresh, so the new build actually loads.',
+      'Reduce-motion preference fully respected — if you have it on at the OS level, animations are skipped.',
     ],
   },
 ];

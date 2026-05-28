@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
+import { BottomNav } from './BottomNav';
+import { PageTransition } from './PageTransition';
 import { useUIStore } from '../store/useUIStore';
 
 /** Library mode shell: top bar + collapsible topic-tree sidebar. */
@@ -31,10 +33,13 @@ export function LibraryLayout() {
           </div>
         )}
 
-        <main className="min-w-0 flex-1">
-          <Outlet />
+        <main className="min-w-0 flex-1 pb-16 lg:pb-0">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
+      <BottomNav />
     </div>
   );
 }

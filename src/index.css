@@ -206,6 +206,45 @@ body {
   animation: fade-in 0.18s ease-out;
 }
 
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 2.4s linear infinite;
+}
+
+/* Page transition — used by App route shell. Subtle fade + tiny up-shift. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.page-enter {
+  animation: page-enter 0.18s ease-out;
+}
+
+/* Respect the user's motion preference — kill animations for those who
+   set "reduce motion" at the OS level. We keep transitions in place but
+   remove the implicit keyframe loops (pulse-soft, slide-up, fade-in,
+   page-enter). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ----------------------------------------------------------------------- */
 /* Accessibility — font size and reading modes                             */
 /* ----------------------------------------------------------------------- */

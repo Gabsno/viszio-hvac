@@ -28,14 +28,30 @@ export function UpdateBanner() {
   if (!stale || dismissed) return null;
 
   return (
-    <div className="animate-slide-up fixed inset-x-0 bottom-0 z-[70] flex items-center gap-3 border-t border-teal-500 bg-teal-700 px-4 py-3 text-white shadow-2xl sm:inset-x-auto sm:bottom-4 sm:right-4 sm:rounded-xl sm:border">
-      <RefreshCw size={18} className="shrink-0" />
-      <p className="flex-1 text-sm font-medium">
-        A new version of Viszio HVAC is ready.
+    <div className="animate-slide-up fixed inset-x-0 top-0 z-[70] flex items-center gap-3 border-b-2 border-teal-400 bg-teal-700 px-4 py-3 text-white shadow-xl">
+      <RefreshCw size={18} className="shrink-0 animate-spin-slow" />
+      <p className="flex-1 text-sm font-semibold">
+        A new version is ready — tap Refresh to load the latest.
       </p>
       <button
-        onClick={() => window.location.reload()}
-        className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-teal-700 hover:bg-teal-50"
+        onClick={async () => {
+          // Clear the service worker cache so the next load definitely
+          // gets the new build (PWAs are aggressive about caching).
+          try {
+            if ('serviceWorker' in navigator) {
+              const regs = await navigator.serviceWorker.getRegistrations();
+              await Promise.all(regs.map((r) => r.update()));
+            }
+            if ('caches' in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map((k) => caches.delete(k)));
+            }
+          } catch {
+            /* ignore — reload will still happen */
+          }
+          window.location.reload();
+        }}
+        className="rounded-lg bg-white px-4 py-1.5 text-sm font-bold text-teal-700 hover:bg-teal-50"
       >
         Refresh
       </button>
