@@ -40,6 +40,7 @@ export function ArticlePage() {
   const markRead = useProgressStore((s) => s.markRead);
   const unmarkRead = useProgressStore((s) => s.unmarkRead);
   const recordActivity = useProgressStore((s) => s.recordActivity);
+  const recordArticleView = useProgressStore((s) => s.recordArticleView);
   const savedNote = useProgressStore((s) => s.notes[id] ?? '');
   const setNote = useProgressStore((s) => s.setNote);
   const openTutor = useUIStore((s) => s.openTutor);
@@ -58,7 +59,10 @@ export function ArticlePage() {
     setShowNotes(false);
     setSpeechState('idle');
     window.speechSynthesis?.cancel();
-    if (article) recordActivity();
+    if (article) {
+      recordActivity();
+      recordArticleView(article.id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

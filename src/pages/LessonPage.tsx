@@ -28,7 +28,7 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useUIStore } from '../store/useUIStore';
 
-type Phase = 'learn' | 'challenges' | 'quiz' | 'result';
+type Phase = 'learn' | 'challenges' | 'quiz' | 'result' | 'review';
 
 export function LessonPage() {
   const { lessonId = '' } = useParams();
@@ -38,6 +38,7 @@ export function LessonPage() {
   const completeLesson = useProgressStore((s) => s.completeLesson);
   const awardTrophy = useProgressStore((s) => s.awardTrophy);
   const markRead = useProgressStore((s) => s.markRead);
+  const recordLessonView = useProgressStore((s) => s.recordLessonView);
   const currentStreak = useProgressStore((s) => s.currentStreak);
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const openTutor = useUIStore((s) => s.openTutor);
@@ -47,6 +48,7 @@ export function LessonPage() {
 
   const [phase, setPhase] = useState<Phase>('learn');
   const [score, setScore] = useState(0);
+  const [wrongIndexes, setWrongIndexes] = useState<number[]>([]);
   // Slide-by-slide lesson player — currentSlide is the active index into
   // the lesson's slide deck (built from the lesson's articles).
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -213,6 +215,7 @@ export function LessonPage() {
     window.scrollTo(0, 0);
     setPhase('learn');
     setScore(0);
+    setWrongIndexes([]);
     setCurrentSlide(0);
     setCurrentChallenge(0);
     setChallengeStreak(0);
@@ -224,7 +227,10 @@ export function LessonPage() {
     chunkIndex.current = 0;
     setSpeakingId(null);
     setSpeechState('idle');
-    if (findLesson(lessonId)) trackEvent(`lesson-started: ${lessonId}`);
+    if (findLesson(lessonId)) {
+      trackEvent(`lesson-started: ${lessonId}`);
+      recordLessonView(lessonId);
+    }
   }, [lessonId]);
 
   // Stop any read-aloud when leaving the lesson.
@@ -299,8 +305,9 @@ export function LessonPage() {
     }
   }
 
-  function handleComplete(scorePercent: number) {
+  function handleComplete(scorePercent: number, wrong: number[]) {
     setScore(scorePercent);
+    setWrongIndexes(wrong);
     completeLesson(lesson.id, scorePercent, lesson.xp);
     trackEvent(`lesson-completed: ${lesson.id}`);
     trackEvent(`quiz-score: ${scorePercent}%`);
@@ -592,6 +599,17 @@ export function LessonPage() {
           </p>
 
           <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
+            {wrongIndexes.length > 0 && (
+              <button
+                onClick={() => {
+                  setPhase('review');
+                  window.scrollTo(0, 0);
+                }}
+                className="rounded-lg border border-amber-400 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 hover:border-amber-500 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+              >
+                Review {wrongIndexes.length} missed
+              </button>
+            )}
             <button
               onClick={() => {
                 setPhase('quiz');
@@ -616,6 +634,75 @@ export function LessonPage() {
                 Back to course
               </Link>
             )}
+          </div>
+        </div>
+      )}
+
+      {phase === 'review' && (
+        <div className="mt-5 space-y-4">
+          <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+            <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+              Quiz review
+            </p>
+            <p className="mt-0.5 text-sm text-amber-800 dark:text-amber-200">
+              {wrongIndexes.length} question
+              {wrongIndexes.length === 1 ? '' : 's'} missed — see the correct
+              answer and explanation below.
+            </p>
+          </div>
+
+          {wrongIndexes.map((qIdx) => {
+            const q = lesson.quiz[qIdx];
+            if (!q) return null;
+            const correctText =
+              q.kind === 'short-answer'
+                ? String(q.answer)
+                : q.choices?.[Number(q.answer)] ?? String(q.answer);
+            return (
+              <article
+                key={q.id}
+                className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+              >
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                  Question {qIdx + 1}
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-white">
+                  {q.prompt}
+                </p>
+                <div className="mt-3 rounded-lg border border-emerald-300 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-950/40">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                    Correct answer
+                  </p>
+                  <p className="mt-0.5 text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                    {correctText}
+                  </p>
+                </div>
+                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                  {q.explanation}
+                </p>
+              </article>
+            );
+          })}
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              onClick={() => {
+                setPhase('quiz');
+                window.scrollTo(0, 0);
+              }}
+              className="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 hover:border-teal-400 dark:border-slate-700 dark:text-slate-200"
+            >
+              Retry the full quiz
+            </button>
+            <button
+              onClick={() => {
+                setPhase('result');
+                window.scrollTo(0, 0);
+              }}
+              className="flex-1 rounded-xl bg-teal-700 px-4 py-3 text-sm font-bold text-white hover:bg-teal-800"
+            >
+              Back to result
+            </button>
           </div>
         </div>
       )}

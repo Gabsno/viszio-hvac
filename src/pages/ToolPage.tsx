@@ -4,15 +4,20 @@ import { ArrowLeft } from 'lucide-react';
 import { getTool, TOOLS } from '../tools';
 import { Icon } from '../components/Icon';
 import { trackEvent } from '../lib/analytics';
+import { useProgressStore } from '../store/useProgressStore';
 
 export function ToolPage() {
   const { id = '' } = useParams();
   const tool = getTool(id);
+  const recordToolUse = useProgressStore((s) => s.recordToolUse);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (getTool(id)) trackEvent(`tool: ${id}`);
-  }, [id]);
+    if (getTool(id)) {
+      trackEvent(`tool: ${id}`);
+      recordToolUse(id);
+    }
+  }, [id, recordToolUse]);
 
   if (!tool) {
     return (

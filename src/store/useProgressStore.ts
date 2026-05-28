@@ -29,6 +29,11 @@ interface ProgressState {
   trophies: string[];
   flashcardsKnown: string[]; // glossary terms marked "got it"
 
+  // Recent activity — most recent first, capped at 10 each.
+  recentArticles: string[];
+  recentLessons: string[];
+  recentTools: string[];
+
   // actions
   toggleBookmark: (id: string) => void;
   isBookmarked: (id: string) => boolean;
@@ -43,6 +48,9 @@ interface ProgressState {
   isLessonComplete: (lessonId: string) => boolean;
   awardTrophy: (id: string) => void;
   setCardKnown: (term: string, known: boolean) => void;
+  recordArticleView: (id: string) => void;
+  recordLessonView: (id: string) => void;
+  recordToolUse: (id: string) => void;
   resetProgress: () => void;
 }
 
@@ -60,6 +68,9 @@ export const useProgressStore = create<ProgressState>()(
       quizScores: {},
       trophies: [],
       flashcardsKnown: [],
+      recentArticles: [],
+      recentLessons: [],
+      recentTools: [],
 
       toggleBookmark: (id) =>
         set((s) => ({
@@ -141,6 +152,28 @@ export const useProgressStore = create<ProgressState>()(
             : s.flashcardsKnown.filter((t) => t !== term),
         })),
 
+      recordArticleView: (id) =>
+        set((s) => ({
+          recentArticles: [id, ...s.recentArticles.filter((a) => a !== id)].slice(
+            0,
+            10,
+          ),
+        })),
+      recordLessonView: (id) =>
+        set((s) => ({
+          recentLessons: [id, ...s.recentLessons.filter((a) => a !== id)].slice(
+            0,
+            10,
+          ),
+        })),
+      recordToolUse: (id) =>
+        set((s) => ({
+          recentTools: [id, ...s.recentTools.filter((a) => a !== id)].slice(
+            0,
+            10,
+          ),
+        })),
+
       resetProgress: () =>
         set({
           xp: 0,
@@ -151,6 +184,9 @@ export const useProgressStore = create<ProgressState>()(
           quizScores: {},
           trophies: [],
           readArticles: [],
+          recentArticles: [],
+          recentLessons: [],
+          recentTools: [],
         }),
     }),
     {

@@ -4,7 +4,7 @@ import type { QuizQuestion } from '../types';
 
 interface Props {
   questions: QuizQuestion[];
-  onComplete: (scorePercent: number) => void;
+  onComplete: (scorePercent: number, wrongIndexes: number[]) => void;
 }
 
 function isCorrect(q: QuizQuestion, given: number | string): boolean {
@@ -22,6 +22,7 @@ export function Quiz({ questions, onComplete }: Props) {
   const [text, setText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const [wrongIndexes, setWrongIndexes] = useState<number[]>([]);
 
   const q = questions[index];
   const last = index === questions.length - 1;
@@ -31,13 +32,20 @@ export function Quiz({ questions, onComplete }: Props) {
     const given = q.kind === 'short-answer' ? text : (choice ?? -1);
     if (q.kind !== 'short-answer' && choice === null) return;
     if (q.kind === 'short-answer' && text.trim() === '') return;
-    if (isCorrect(q, given)) setCorrectCount((c) => c + 1);
+    if (isCorrect(q, given)) {
+      setCorrectCount((c) => c + 1);
+    } else {
+      setWrongIndexes((w) => (w.includes(index) ? w : [...w, index]));
+    }
     setSubmitted(true);
   }
 
   function next() {
     if (last) {
-      onComplete(Math.round((correctCount / questions.length) * 100));
+      onComplete(
+        Math.round((correctCount / questions.length) * 100),
+        wrongIndexes,
+      );
       return;
     }
     setIndex((i) => i + 1);

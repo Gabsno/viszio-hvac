@@ -11,16 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-mobile-shell',
+    id: '2026-05-28-dashboard',
     date: 'May 2026',
-    title: 'Mobile-app feel — bottom nav, Profile, page transitions',
+    title: 'New Home dashboard + daily lesson + review missed',
     items: [
-      'Persistent bottom navigation on mobile — one tap between Home, Course, Library, Tools and Profile. The app finally feels like a real native app instead of a website.',
-      'New Profile page (the rightmost tab) brings together your streak, XP, trophies, certificate, bookmarks, name and the reset button. The Course page is now decluttered — it focuses on the snake-path lesson tree.',
-      'Subtle fade transition between pages so route changes feel intentional, not jarring.',
-      'Haptic feedback on correct and wrong answers in the practice phase, on supported phones.',
-      'The "new version" banner is now a prominent top bar (instead of an easy-to-miss corner toast) and clears the service-worker cache when you tap Refresh, so the new build actually loads.',
-      'Reduce-motion preference fully respected — if you have it on at the OS level, animations are skipped.',
+      'Home is now a real dashboard: greeting and streak chip at top, Continue Learning card to resume your course, a Today\'s Pick lesson that rotates daily, recent articles/lessons/tools you opened, quick tools and explore-by-pillar.',
+      'Today\'s Pick is deterministic — same lesson all day, fresh one tomorrow. Designed to drive a quick daily habit.',
+      'New "Pick up where you left off" section shows the last articles, lessons and calculators you opened — one tap to resume any of them.',
+      'Quiz: when you miss questions, you now get a Review screen with each missed question, the correct answer and the explanation. No more hunting through the slides to find what you got wrong.',
+      'Bottom navigation, page transitions, haptics, prominent update banner and Profile page (all from the last update) still in place.',
     ],
   },
 ];
