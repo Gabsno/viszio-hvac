@@ -4,10 +4,12 @@ import {
   ArrowLeft,
   ArrowRight,
   ChevronLeft,
+  Clock,
   GraduationCap,
   Pause,
   Play,
   RotateCcw,
+  Share2,
   Sparkles,
   Square,
   Star,
@@ -17,6 +19,7 @@ import {
 import { findLesson, lessonOrder } from '../course/courseData';
 import { buildSlidesForLesson } from '../course/buildSlides';
 import { ChallengeView } from '../course/Challenge';
+import { lessonDurationMinutes } from '../course/lessonStats';
 import { trackEvent } from '../lib/analytics';
 import { getArticles, toPlainText } from '../lib/content';
 import { Quiz } from '../course/Quiz';
@@ -270,6 +273,31 @@ export function LessonPage() {
   const order = lessonOrder();
   const pos = order.findIndex((o) => o.lessonId === lessonId);
   const nextLesson = pos >= 0 && pos < order.length - 1 ? order[pos + 1] : null;
+  const duration = lessonDurationMinutes(lesson);
+
+  async function shareLesson() {
+    const url = window.location.href;
+    const shareText = `Viszio HVAC lesson: ${lesson.title} — ${duration} min lesson + quiz.`;
+    trackEvent(`lesson-shared: ${lesson.id}`);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Viszio HVAC · ${lesson.title}`,
+          text: shareText,
+          url,
+        });
+        return;
+      } catch {
+        /* user cancelled or share failed — fall through to clipboard */
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(`${shareText}\n${url}`);
+      alert('Lesson link copied to clipboard.');
+    } catch {
+      window.prompt('Copy this lesson link:', url);
+    }
+  }
 
   function handleComplete(scorePercent: number) {
     setScore(scorePercent);
@@ -301,12 +329,29 @@ export function LessonPage() {
         <ArrowLeft size={14} /> {module.title}
       </Link>
 
-      <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-        {lesson.title}
-      </h1>
-      <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
-        <Star size={14} className="text-teal-600" /> {lesson.xp} XP ·{' '}
-        {lesson.quiz.length} questions
+      <div className="mt-2 flex items-start gap-3">
+        <h1 className="min-w-0 flex-1 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          {lesson.title}
+        </h1>
+        <button
+          onClick={shareLesson}
+          aria-label="Share lesson"
+          className="shrink-0 rounded-lg border border-slate-300 p-2 text-slate-600 transition hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:text-slate-300"
+        >
+          <Share2 size={16} />
+        </button>
+      </div>
+      <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+        <span className="flex items-center gap-1">
+          <Clock size={14} className="text-slate-400" /> {duration} min
+        </span>
+        <span className="flex items-center gap-1">
+          <Star size={14} className="text-teal-600" /> {lesson.xp} XP
+        </span>
+        <span>{lesson.quiz.length} quiz Qs</span>
+        {lesson.challenges && lesson.challenges.length > 0 && (
+          <span>{lesson.challenges.length} practice</span>
+        )}
       </p>
 
       {phase === 'learn' && slide && (

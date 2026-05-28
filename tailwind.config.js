@@ -36,6 +36,15 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
+      keyframes: {
+        'pulse-soft': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(20, 184, 166, 0.45)' },
+          '50%': { boxShadow: '0 0 0 10px rgba(20, 184, 166, 0)' },
+        },
+      },
+      animation: {
+        'pulse-soft': 'pulse-soft 1.8s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

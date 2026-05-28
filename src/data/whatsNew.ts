@@ -11,14 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-interactive-challenges',
+    id: '2026-05-28-course-bundle',
     date: 'May 2026',
-    title: 'Interactive practice challenges',
+    title: 'Course tabs, snake-path lessons, share & duration',
     items: [
-      'Lessons now have a Practice phase between the slides and the quiz. Five new challenge types: type a number with units (e.g. convert 30 tons to kW), fill in a missing word, reorder a sequence of operations, match terms to definitions, and select all that apply.',
-      'Live in three demo lessons to start: "What psychrometrics is" (Module 1), "Airflow & units" (Module 1), "The load calculation process" (Module 2), and "Volume & balancing dampers" (Module 9). More will be added across all modules.',
-      'Each challenge gives instant feedback with an explanation. Tap Skip practice if you want to jump straight to the quiz.',
-      'Plus everything from before: slide-by-slide lessons, Continue Learning card, full Listen player controls, six voice presets, speed/pitch sliders.',
+      'New tabs at the top of the Course page — Lessons, Tools, Glossary — so calculators and term lookups are one tap away while you are mid-course.',
+      'Lesson tree is now a snake-style path: lessons zig-zag down the page with circular nodes, the next lesson pulses, done lessons get an emerald checkmark, locked lessons are greyed.',
+      'Every lesson card now shows a duration (e.g. 8 min) computed from its articles plus practice and quiz time.',
+      'Share button on every lesson — uses your phone’s native share sheet on mobile, falls back to copying the link on desktop.',
+      'Practice challenges still live in modules 1, 2 and 9. More coming.',
     ],
   },
 ];
