@@ -11,15 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-visual-polish',
+    id: '2026-05-28-illustrations',
     date: 'May 2026',
-    title: 'Visual polish — premium look, native-app feel',
+    title: 'Custom AI-generated illustrations',
     items: [
-      'Custom hand-crafted SVG hero illustration on Home (isometric chiller, AHU and ductwork) — replaces the plain gradient with real product personality.',
-      'Snake-path lesson nodes are now bigger, with soft gradient fills and depth shadows. The next-up node pulses against a richer teal halo. Done lessons get a brighter emerald gradient.',
-      'Bottom navigation now uses a pill-style highlight for the active tab — same idiom as iOS and Duolingo. Cleaner, more obvious.',
-      'New reusable EmptyState component — used on Bookmarks (Profile) and the Library no-results screen. Friendly icon, clear copy, and a CTA back to where you fill the list.',
-      'Subtle teal-tinted ambient gradient on the page background (light and dark), Inter font features enabled, micro-press scale on interactive elements, and a refined card depth system.',
+      'New AI-generated hero illustration on Home — isometric mechanical room with a chiller, air handling unit and ductwork, on a faint blueprint grid. Brand-coherent teal and warm orange palette, much richer than the placeholder SVG.',
+      'Empty-state graphic on the Bookmarks panel in Profile — a teal bookmark ribbon with floating engineering symbols (gauge, duct, droplet). The blank screen finally invites action.',
+      'Course completion banner on the Certificate page now shows a gold engineering medal with confetti — a real celebration moment when you hit 100%.',
+      'All illustrations generated via Gemini Nano Banana with the engineering aesthetic, then baked into the app — they ship offline with the PWA.',
+      'Snake-path nodes, bottom-nav active pill, ambient gradient background and all the other polish from yesterday are still in place.',
     ],
   },
 ];

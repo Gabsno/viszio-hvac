@@ -215,7 +215,8 @@ export function ProfilePage() {
         {bookmarks.length === 0 ? (
           <div className="mt-3">
             <EmptyState
-              icon={<Bookmark size={22} />}
+              image={`${import.meta.env.BASE_URL}illustrations/empty-bookmarks.png`}
+              imageAlt="A teal bookmark ribbon with floating engineering symbols."
               title="No bookmarks yet"
               description="Tap the bookmark icon on any article to save it here for quick recall."
               action={{ label: 'Browse the library', to: '/library' }}

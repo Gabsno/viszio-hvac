@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
 
 interface Props {
-  icon: React.ReactNode;
+  /** Lucide icon — used when no image is provided. */
+  icon?: React.ReactNode;
+  /** Optional illustration path (use for richer empty states). */
+  image?: string;
+  imageAlt?: string;
   title: string;
   description: string;
   action?: {
@@ -12,16 +16,32 @@ interface Props {
 
 /**
  * Empty-state placeholder. Shown when a list has no items yet: bookmarks,
- * notes, search no-results, locked content. Always pairs a friendly icon
- * with a one-line "what is this", a sentence of help, and an optional CTA
- * to the place that fills the empty list.
+ * notes, search no-results, locked content. Pairs either a friendly icon
+ * chip or a full illustration with a one-line "what is this", a sentence
+ * of help, and an optional CTA to the place that fills the empty list.
  */
-export function EmptyState({ icon, title, description, action }: Props) {
+export function EmptyState({
+  icon,
+  image,
+  imageAlt = '',
+  title,
+  description,
+  action,
+}: Props) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-10 text-center dark:border-slate-700 dark:bg-slate-900/60">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200 dark:from-teal-950 dark:to-teal-950/40 dark:text-teal-300 dark:ring-teal-900">
-        {icon}
-      </span>
+    <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-8 text-center dark:border-slate-700 dark:bg-slate-900/60">
+      {image ? (
+        <img
+          src={image}
+          alt={imageAlt}
+          loading="lazy"
+          className="h-32 w-32 rounded-2xl object-cover sm:h-40 sm:w-40"
+        />
+      ) : icon ? (
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200 dark:from-teal-950 dark:to-teal-950/40 dark:text-teal-300 dark:ring-teal-900">
+          {icon}
+        </span>
+      ) : null}
       <h3 className="mt-3 text-base font-bold text-slate-900 dark:text-white">
         {title}
       </h3>

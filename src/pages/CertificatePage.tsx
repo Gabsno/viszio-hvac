@@ -57,6 +57,30 @@ export function CertificatePage() {
         </div>
       )}
 
+      {isComplete && (
+        <div className="no-print mt-4 flex items-center gap-4 rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-white p-4 shadow-sm dark:border-teal-800 dark:from-teal-950/40 dark:to-slate-900">
+          <img
+            src={`${import.meta.env.BASE_URL}illustrations/celebration-medal.png`}
+            alt="A gold engineering medal with teal ribbon and confetti."
+            loading="lazy"
+            width={120}
+            height={120}
+            className="h-24 w-24 shrink-0"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+              Congratulations
+            </p>
+            <p className="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
+              You earned your certificate.
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              {xp} XP earned across {total} lessons.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Name field */}
       <div className="no-print mt-4">
         <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
