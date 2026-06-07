@@ -11,7 +11,7 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-illustrations-v2',
+    id: '2026-05-28-illustrations-v3',
     date: 'May 2026',
     title: 'Custom AI-generated illustrations',
     items: [
