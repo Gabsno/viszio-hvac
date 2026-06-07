@@ -17,9 +17,68 @@ body,
 
 body {
   @apply bg-slate-50 text-slate-800 antialiased;
+  font-feature-settings: 'cv11', 'ss03', 'ss01'; /* Inter style refinements */
+  /* Subtle teal-tinted ambient gradient — adds depth vs flat slate */
+  background-image:
+    radial-gradient(at 18% 0%, rgba(14, 116, 144, 0.06), transparent 55%),
+    radial-gradient(at 95% 105%, rgba(234, 88, 12, 0.04), transparent 50%);
+  background-attachment: fixed;
 }
 .dark body {
   @apply bg-slate-950 text-slate-200;
+  background-image:
+    radial-gradient(at 18% 0%, rgba(20, 184, 166, 0.08), transparent 55%),
+    radial-gradient(at 95% 105%, rgba(234, 88, 12, 0.05), transparent 50%);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Reusable design tokens                                                  */
+/* ----------------------------------------------------------------------- */
+
+/* Cards: consistent depth + smooth hover lift */
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm transition;
+  box-shadow:
+    0 1px 0 rgba(15, 23, 42, 0.02),
+    0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.dark .card {
+  @apply border-slate-800 bg-slate-900;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.card-hover {
+  @apply transition;
+}
+.card-hover:hover {
+  @apply -translate-y-0.5;
+  box-shadow:
+    0 1px 0 rgba(15, 23, 42, 0.02),
+    0 8px 16px -8px rgba(13, 148, 136, 0.18);
+}
+.dark .card-hover:hover {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.4),
+    0 8px 16px -8px rgba(20, 184, 166, 0.25);
+}
+
+/* Pills — XP, streak, duration, status chips */
+.pill {
+  @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold;
+}
+
+/* Subtle pressed-scale on tap — used for interactive elements */
+.tap {
+  @apply transition;
+}
+.tap:active {
+  transform: scale(0.98);
+}
+
+/* Section title — consistent uppercase eyebrow */
+.eyebrow {
+  @apply text-[11px] font-bold uppercase tracking-wider text-slate-400;
 }
 
 /* Thin custom scrollbars */

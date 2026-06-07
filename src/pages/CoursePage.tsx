@@ -200,11 +200,11 @@ export function CoursePage() {
                       const isLeft = i % 2 === 0;
 
                       const nodeStateClasses = done
-                        ? 'bg-emerald-500 text-white ring-emerald-200 dark:ring-emerald-900/60'
+                        ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white ring-emerald-200 shadow-[0_6px_14px_-4px_rgba(16,185,129,0.5)] dark:ring-emerald-900/60'
                         : isNext
-                          ? 'bg-teal-600 text-white ring-teal-300 dark:ring-teal-800/60 animate-pulse-soft'
+                          ? 'bg-gradient-to-br from-teal-500 to-teal-700 text-white ring-teal-300 shadow-[0_6px_14px_-4px_rgba(13,148,136,0.55)] dark:ring-teal-800/60 animate-pulse-soft'
                           : unlocked
-                            ? 'bg-teal-100 text-teal-700 ring-teal-100 dark:bg-teal-950 dark:text-teal-300 dark:ring-teal-950/80'
+                            ? 'bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-teal-100 dark:from-teal-950 dark:to-teal-900 dark:text-teal-300 dark:ring-teal-950/80'
                             : 'bg-slate-200 text-slate-400 ring-slate-100 dark:bg-slate-800 dark:text-slate-500 dark:ring-slate-800';
 
                       const card = (
@@ -252,19 +252,19 @@ export function CoursePage() {
 
                       const node = (
                         <span
-                          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ring-8 ${nodeStateClasses}`}
+                          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ring-[6px] ${nodeStateClasses}`}
                           aria-hidden="true"
                         >
                           {done ? (
-                            <Check size={22} />
+                            <Check size={26} strokeWidth={3} />
                           ) : unlocked ? (
                             <Play
-                              size={20}
+                              size={22}
                               fill="currentColor"
                               className="ml-0.5"
                             />
                           ) : (
-                            <Lock size={18} />
+                            <Lock size={20} />
                           )}
                         </span>
                       );

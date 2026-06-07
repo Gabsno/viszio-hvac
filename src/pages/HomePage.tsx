@@ -21,6 +21,7 @@ import { ARTICLES, TREE, getArticles } from '../lib/content';
 import { PILLARS } from '../content/pillars';
 import { Icon } from '../components/Icon';
 import { ArticleCard } from '../components/ArticleCard';
+import { HeroIllustration } from '../components/HeroIllustration';
 import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { findLesson, lessonOrder, totalLessons } from '../course/courseData';
@@ -265,27 +266,30 @@ export function HomePage() {
 
       {/* First-time hero (only shown when there's nothing to continue) */}
       {!continueLesson && !hasAnyRecent && (
-        <section className="mt-6 overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 via-teal-800 to-teal-950 p-6 text-white sm:p-8">
-          <h2 className="max-w-2xl text-xl font-extrabold leading-tight tracking-tight sm:text-3xl">
-            HVAC engineering, made learnable.
-          </h2>
-          <p className="mt-2 max-w-xl text-sm text-teal-100">
-            {APP_TAGLINE} A searchable library, a Duolingo-style course,
-            engineering calculators and a Ghana-aware design data hub.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2.5">
-            <Link
-              to="/library"
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-bold text-teal-800 hover:bg-teal-50"
-            >
-              <BookOpen size={16} /> Browse library
-            </Link>
-            <Link
-              to="/course"
-              className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-bold text-white ring-1 ring-teal-400 hover:bg-teal-500"
-            >
-              <GraduationCap size={16} /> Start course
-            </Link>
+        <section className="mt-6 overflow-hidden rounded-2xl shadow-md">
+          <HeroIllustration className="block h-auto w-full" />
+          <div className="bg-gradient-to-br from-teal-700 via-teal-800 to-teal-950 p-6 text-white sm:p-8">
+            <h2 className="max-w-2xl text-xl font-extrabold leading-tight tracking-tight sm:text-3xl">
+              HVAC engineering, made learnable.
+            </h2>
+            <p className="mt-2 max-w-xl text-sm text-teal-100">
+              {APP_TAGLINE} A searchable library, a Duolingo-style course,
+              engineering calculators and a Ghana-aware design data hub.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <Link
+                to="/library"
+                className="tap inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-bold text-teal-800 hover:bg-teal-50"
+              >
+                <BookOpen size={16} /> Browse library
+              </Link>
+              <Link
+                to="/course"
+                className="tap inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-bold text-white ring-1 ring-teal-400 hover:bg-teal-500"
+              >
+                <GraduationCap size={16} /> Start course
+              </Link>
+            </div>
           </div>
         </section>
       )}

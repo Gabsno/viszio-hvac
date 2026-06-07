@@ -11,15 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-dashboard',
+    id: '2026-05-28-visual-polish',
     date: 'May 2026',
-    title: 'New Home dashboard + daily lesson + review missed',
+    title: 'Visual polish — premium look, native-app feel',
     items: [
-      'Home is now a real dashboard: greeting and streak chip at top, Continue Learning card to resume your course, a Today\'s Pick lesson that rotates daily, recent articles/lessons/tools you opened, quick tools and explore-by-pillar.',
-      'Today\'s Pick is deterministic — same lesson all day, fresh one tomorrow. Designed to drive a quick daily habit.',
-      'New "Pick up where you left off" section shows the last articles, lessons and calculators you opened — one tap to resume any of them.',
-      'Quiz: when you miss questions, you now get a Review screen with each missed question, the correct answer and the explanation. No more hunting through the slides to find what you got wrong.',
-      'Bottom navigation, page transitions, haptics, prominent update banner and Profile page (all from the last update) still in place.',
+      'Custom hand-crafted SVG hero illustration on Home (isometric chiller, AHU and ductwork) — replaces the plain gradient with real product personality.',
+      'Snake-path lesson nodes are now bigger, with soft gradient fills and depth shadows. The next-up node pulses against a richer teal halo. Done lessons get a brighter emerald gradient.',
+      'Bottom navigation now uses a pill-style highlight for the active tab — same idiom as iOS and Duolingo. Cleaner, more obvious.',
+      'New reusable EmptyState component — used on Bookmarks (Profile) and the Library no-results screen. Friendly icon, clear copy, and a CTA back to where you fill the list.',
+      'Subtle teal-tinted ambient gradient on the page background (light and dark), Inter font features enabled, micro-press scale on interactive elements, and a refined card depth system.',
     ],
   },
 ];

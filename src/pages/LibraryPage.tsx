@@ -1,9 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Library, X } from 'lucide-react';
+import { Library, Search, X } from 'lucide-react';
 import { ARTICLES } from '../lib/content';
 import { PILLARS } from '../content/pillars';
 import { ArticleCard } from '../components/ArticleCard';
+import { EmptyState } from '../components/EmptyState';
 import type { Difficulty, Region, Tier } from '../types';
 
 type RegionFilter = Region | 'all';
@@ -192,9 +193,13 @@ export function LibraryPage() {
       </p>
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-slate-400">
-          No articles match these filters.
-        </p>
+        <div className="mt-6">
+          <EmptyState
+            icon={<Search size={22} />}
+            title="No articles match"
+            description="Try widening your filters — drop a difficulty, pick a different pillar, or clear the search."
+          />
+        </div>
       ) : (
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((a) => (

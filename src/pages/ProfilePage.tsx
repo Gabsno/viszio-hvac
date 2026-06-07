@@ -16,6 +16,7 @@ import { TROPHIES, totalLessons } from '../course/courseData';
 import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { getArticle } from '../lib/content';
+import { EmptyState } from '../components/EmptyState';
 
 const TROPHY_ICONS: Record<string, React.ReactNode> = {
   Star: <Star size={18} />,
@@ -212,10 +213,14 @@ export function ProfilePage() {
           <span className="text-xs text-slate-400">({bookmarks.length})</span>
         </div>
         {bookmarks.length === 0 ? (
-          <p className="mt-2 text-xs text-slate-500">
-            You haven't bookmarked any articles yet. Tap the bookmark icon on
-            any article header to save it for later.
-          </p>
+          <div className="mt-3">
+            <EmptyState
+              icon={<Bookmark size={22} />}
+              title="No bookmarks yet"
+              description="Tap the bookmark icon on any article to save it here for quick recall."
+              action={{ label: 'Browse the library', to: '/library' }}
+            />
+          </div>
         ) : (
           <ul className="mt-2 space-y-1.5">
             {bookmarks.slice(0, 8).map((id) => {
