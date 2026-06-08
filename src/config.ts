@@ -49,6 +49,13 @@ export const APP_NAME = 'Viszio HVAC';
 export const APP_TAGLINE = 'HVAC engineering, made learnable.';
 export const SUPPORT_EMAIL = 'visziogh@gmail.com';
 
+// --- Feature flags --------------------------------------------------------
+// Temporarily hide the Tools section across the app (bottom nav, course
+// tabs, Home dashboard, recent activity). Set back to true to restore.
+// The /tools and /tools/:id routes are left in place so direct links keep
+// working — only the visual entry points are removed.
+export const TOOLS_ENABLED = false;
+
 // GitHub Pages base — also used to fetch version.json at runtime.
 export const BASE_URL = import.meta.env.BASE_URL;
 

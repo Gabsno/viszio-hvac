@@ -1,11 +1,14 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, GraduationCap, Calculator } from 'lucide-react';
+import { TOOLS_ENABLED } from '../config';
 
-const MODES = [
+const ALL_MODES = [
   { key: 'library', label: 'Library', icon: BookOpen, path: '/library' },
   { key: 'course', label: 'Course', icon: GraduationCap, path: '/course' },
   { key: 'tools', label: 'Tools', icon: Calculator, path: '/tools' },
 ] as const;
+
+const MODES = ALL_MODES.filter((m) => m.key !== 'tools' || TOOLS_ENABLED);
 
 /** Top-right switcher between Library, Course and Tools modes. */
 export function ModeSwitcher() {

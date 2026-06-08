@@ -6,6 +6,7 @@ import {
   Calculator,
   User,
 } from 'lucide-react';
+import { TOOLS_ENABLED } from '../config';
 
 interface Item {
   to: string;
@@ -14,7 +15,7 @@ interface Item {
   match?: (pathname: string) => boolean;
 }
 
-const ITEMS: Item[] = [
+const ALL_ITEMS: Item[] = [
   { to: '/', icon: <Home size={19} />, label: 'Home' },
   {
     to: '/course',
@@ -36,6 +37,10 @@ const ITEMS: Item[] = [
   },
   { to: '/profile', icon: <User size={19} />, label: 'Profile' },
 ];
+
+const ITEMS: Item[] = ALL_ITEMS.filter(
+  (i) => i.to !== '/tools' || TOOLS_ENABLED,
+);
 
 /**
  * Persistent bottom tab bar for mobile (lg:hidden). Each item highlights

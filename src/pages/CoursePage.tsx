@@ -18,6 +18,7 @@ import {
 } from '../course/courseData';
 import { lessonDurationMinutes } from '../course/lessonStats';
 import { TOOLS } from '../tools';
+import { TOOLS_ENABLED } from '../config';
 import { GLOSSARY } from '../data/glossary';
 import { Icon } from '../components/Icon';
 import { useProgressStore } from '../store/useProgressStore';
@@ -132,7 +133,9 @@ export function CoursePage() {
         {(
           [
             { id: 'lessons', label: 'Lessons', icon: <GraduationCap size={14} /> },
-            { id: 'tools', label: 'Tools', icon: <Calculator size={14} /> },
+            ...(TOOLS_ENABLED
+              ? [{ id: 'tools', label: 'Tools', icon: <Calculator size={14} /> }]
+              : []),
             { id: 'glossary', label: 'Glossary', icon: <BookText size={14} /> },
           ] as { id: Tab; label: string; icon: React.ReactNode }[]
         ).map((t) => (
@@ -308,7 +311,7 @@ export function CoursePage() {
       )}
 
       {/* Tab: Tools */}
-      {tab === 'tools' && (
+      {TOOLS_ENABLED && tab === 'tools' && (
         <div className="mt-5">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             All {TOOLS.length} engineering calculators run offline and switch

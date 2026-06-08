@@ -28,7 +28,7 @@ import { findLesson, lessonOrder, totalLessons } from '../course/courseData';
 import { lessonDurationMinutes } from '../course/lessonStats';
 import { todaysLesson } from '../course/dailyLesson';
 import { getTool, TOOLS } from '../tools';
-import { APP_TAGLINE } from '../config';
+import { APP_TAGLINE, TOOLS_ENABLED } from '../config';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -76,10 +76,9 @@ export function HomePage() {
     .map((id) => findLesson(id))
     .filter(Boolean)
     .slice(0, 3);
-  const recentToolObjs = recentTools
-    .map((id) => getTool(id))
-    .filter(Boolean)
-    .slice(0, 3);
+  const recentToolObjs = TOOLS_ENABLED
+    ? recentTools.map((id) => getTool(id)).filter(Boolean).slice(0, 3)
+    : [];
 
   const hasAnyRecent =
     recentArticleObjs.length > 0 ||
@@ -312,41 +311,43 @@ export function HomePage() {
       )}
 
       {/* Quick tools */}
-      <section className="mt-7">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Calculator size={17} className="text-teal-600" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Quick tools
-            </h2>
-          </div>
-          <Link
-            to="/tools"
-            className="text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300"
-          >
-            All {TOOLS.length} →
-          </Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {TOOLS.slice(0, 4).map((t) => (
+      {TOOLS_ENABLED && (
+        <section className="mt-7">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Calculator size={17} className="text-teal-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                Quick tools
+              </h2>
+            </div>
             <Link
-              key={t.id}
-              to={`/tools/${t.id}`}
-              className="group rounded-xl border border-slate-200 bg-white p-3 transition hover:border-teal-400 dark:border-slate-800 dark:bg-slate-900"
+              to="/tools"
+              className="text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">
-                <Icon name={t.icon} size={16} />
-              </span>
-              <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
-                {t.title}
-              </h3>
-              <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500 dark:text-slate-400">
-                {t.description}
-              </p>
+              All {TOOLS.length} →
             </Link>
-          ))}
-        </div>
-      </section>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {TOOLS.slice(0, 4).map((t) => (
+              <Link
+                key={t.id}
+                to={`/tools/${t.id}`}
+                className="group rounded-xl border border-slate-200 bg-white p-3 transition hover:border-teal-400 dark:border-slate-800 dark:bg-slate-900"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">
+                  <Icon name={t.icon} size={16} />
+                </span>
+                <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                  {t.title}
+                </h3>
+                <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  {t.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Explore by pillar */}
       <section className="mt-7">
