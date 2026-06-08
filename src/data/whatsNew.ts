@@ -11,14 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-auth-scaffold',
+    id: '2026-05-28-illustrations-v3',
     date: 'May 2026',
-    title: 'Email accounts (coming soon)',
+    title: 'Custom AI-generated illustrations',
     items: [
-      'Scaffolded full email login + signup with Supabase. The screens, auth state, and migration logic are all in place — just waiting for the backend project to be wired up (see SUPABASE_SETUP.md in the repo).',
-      'When email auth is enabled, existing testers log in for the first time and their localStorage progress (XP, bookmarks, notes, streaks, lessons) is automatically migrated to their new account. Nothing is lost.',
-      'Until the backend is connected, the access code gate (delta-tango-7) still works the same way it always has.',
-      'New illustrations, snake-path lesson tree, bottom nav and dashboard are all unchanged.',
+      'New AI-generated hero illustration on Home — isometric mechanical room with a chiller, air handling unit and ductwork, on a faint blueprint grid. Brand-coherent teal and warm orange palette, much richer than the placeholder SVG.',
+      'Empty-state graphic on the Bookmarks panel in Profile — a teal bookmark ribbon with floating engineering symbols (gauge, duct, droplet). The blank screen finally invites action.',
+      'Course completion banner on the Certificate page now shows a gold engineering medal with confetti — a real celebration moment when you hit 100%.',
+      'All illustrations generated via Gemini Nano Banana with the engineering aesthetic, then baked into the app — they ship offline with the PWA.',
+      'Snake-path nodes, bottom-nav active pill, ambient gradient background and all the other polish from yesterday are still in place.',
     ],
   },
 ];

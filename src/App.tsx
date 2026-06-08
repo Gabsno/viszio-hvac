@@ -7,7 +7,6 @@ import { SearchOverlay } from './components/SearchOverlay';
 import { AITutorPanel } from './components/AITutorPanel';
 import { AccessGate } from './components/AccessGate';
 import { RevocationGate } from './components/RevocationGate';
-import { AuthGate } from './components/AuthGate';
 import { WhatsNewModal } from './components/WhatsNewModal';
 import { HomePage } from './pages/HomePage';
 import { LibraryPage } from './pages/LibraryPage';
@@ -54,7 +53,6 @@ export default function App() {
   return (
     <RevocationGate>
       <AccessGate>
-        <AuthGate>
         <Routes>
         <Route element={<LibraryLayout />}>
           <Route path="/library" element={<LibraryPage />} />
@@ -82,7 +80,6 @@ export default function App() {
         <SearchOverlay />
         <AITutorPanel />
         <WhatsNewModal />
-        </AuthGate>
       </AccessGate>
     </RevocationGate>
   );
