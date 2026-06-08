@@ -12,6 +12,7 @@
     "stamp": "node scripts/stamp-version.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.107.0",
     "flexsearch": "^0.7.43",
     "lucide-react": "^0.408.0",
     "react": "^18.3.1",

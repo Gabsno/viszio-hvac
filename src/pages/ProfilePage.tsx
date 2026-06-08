@@ -5,6 +5,7 @@ import {
   Check,
   Flame,
   GraduationCap,
+  LogOut,
   Settings as SettingsIcon,
   Star,
   Trash2,
@@ -15,6 +16,8 @@ import { useState } from 'react';
 import { TROPHIES, totalLessons } from '../course/courseData';
 import { useProgressStore } from '../store/useProgressStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { AUTH_ENABLED } from '../config';
 import { getArticle } from '../lib/content';
 import { EmptyState } from '../components/EmptyState';
 
@@ -38,6 +41,8 @@ export function ProfilePage() {
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const userName = useSettingsStore((s) => s.userName);
   const setUserName = useSettingsStore((s) => s.setUserName);
+  const authUser = useAuthStore((s) => s.user);
+  const signOut = useAuthStore((s) => s.signOut);
 
   const [confirmReset, setConfirmReset] = useState(false);
 
@@ -68,6 +73,26 @@ export function ProfilePage() {
           <SettingsIcon size={16} />
         </Link>
       </div>
+
+      {/* Signed-in email + sign out */}
+      {AUTH_ENABLED && authUser?.email && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              Signed in as
+            </p>
+            <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+              {authUser.email}
+            </p>
+          </div>
+          <button
+            onClick={() => signOut()}
+            className="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-400 hover:text-rose-700 dark:border-slate-700 dark:text-slate-300"
+          >
+            <LogOut size={13} /> Sign out
+          </button>
+        </div>
+      )}
 
       {/* Name input */}
       {!userName && (

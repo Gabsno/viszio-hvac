@@ -7,21 +7,40 @@
 export const SAAS_MODE_ENABLED = false;
 
 // --- Access gate ----------------------------------------------------------
-// A shared access-code lock. While ACCESS_GATE_ENABLED is true, visitors must
-// enter the code once before they can use the app — useful for a private
-// beta or sharing with a chosen group.
-//
-// This is a deterrent, not hard security: a static site ships all of its
-// content to the browser, so a determined person could still extract it. For
-// true per-user control, put the site behind Cloudflare Access or build the
-// SaaS auth backend.
+// Legacy shared access-code lock. Kept for safety while Supabase auth is
+// being rolled out; flip ACCESS_GATE_ENABLED to false once email auth is
+// live and proven.
 //
 // To turn the gate OFF, set ACCESS_GATE_ENABLED to false.
 // To change the code, run:  node scripts/make-access-code.mjs "new code"
 // then paste the printed hash into ACCESS_CODE_HASH below.
+// Stays true until Supabase auth is configured below. Once SUPABASE_URL and
+// SUPABASE_ANON_KEY are populated and the SQL migration has run, you can
+// safely set this to false — email login replaces the shared code.
 export const ACCESS_GATE_ENABLED = true;
 export const ACCESS_CODE_HASH =
   '00c2025e12343c7719622af6555d843571afc0d0e083ac3e14dd86e45ad10b4a';
+
+// --- Supabase auth -------------------------------------------------------
+// Email + password authentication via Supabase. While the URL or anon key
+// below are empty strings, AUTH_ENABLED is treated as false and the app
+// falls back to the legacy access-code path.
+//
+// To enable real accounts:
+//   1. Create a free project at https://supabase.com (no credit card).
+//   2. From Project Settings → API, copy the Project URL and the anon key.
+//   3. Paste them into the two strings below.
+//   4. Run the SQL in supabase/migrations/001_initial.sql in the Supabase
+//      SQL editor to create the profiles + user_progress tables and the
+//      row-level security policies.
+//   5. Commit and deploy. The app will switch to email login automatically.
+//
+// On first login of an existing tester, their localStorage progress is
+// migrated to their new account so XP, bookmarks, notes and streaks are
+// preserved.
+export const SUPABASE_URL = '';
+export const SUPABASE_ANON_KEY = '';
+export const AUTH_ENABLED = SUPABASE_URL.length > 0 && SUPABASE_ANON_KEY.length > 0;
 
 // --- Usage analytics ------------------------------------------------------
 // Anonymous, cookieless, aggregate page-view analytics — it shows which
