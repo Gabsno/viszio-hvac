@@ -3,6 +3,7 @@ import {
   Award,
   Bookmark,
   Check,
+  Download,
   Flame,
   GraduationCap,
   Settings as SettingsIcon,
@@ -11,6 +12,8 @@ import {
   Trophy,
   User,
 } from 'lucide-react';
+import { downloadExport, hasAnyProgress } from '../lib/exportData';
+import { trackEvent } from '../lib/analytics';
 import { useState } from 'react';
 import { TROPHIES, totalLessons } from '../course/courseData';
 import { useProgressStore } from '../store/useProgressStore';
@@ -245,6 +248,41 @@ export function ProfilePage() {
               </li>
             )}
           </ul>
+        )}
+      </div>
+
+      {/* Migrate to Viszio Academy */}
+      <div className="mt-4 rounded-2xl border-2 border-dashed border-ghana-300 bg-gradient-to-br from-ghana-50/70 to-amber-50 p-4 dark:border-ghana-700 dark:from-ghana-950/40 dark:to-amber-950/30">
+        <div className="flex items-center gap-2">
+          <Download size={15} className="text-ghana-700 dark:text-ghana-300" />
+          <p className="text-sm font-bold text-slate-900 dark:text-white">
+            Move to Viszio Academy
+          </p>
+        </div>
+        <p className="mt-1 text-xs text-slate-700 dark:text-slate-300">
+          Viszio HVAC is becoming part of <strong>Viszio Academy</strong>, a
+          new mobile app covering Mechanical, Electrical, Plumbing and Fire.
+          Download your progress here — you'll import it into Viszio Academy
+          when it launches on the Play Store and App Store.
+        </p>
+        <button
+          onClick={() => {
+            const name = downloadExport();
+            trackEvent('data-export');
+            alert(
+              `Saved ${name} to your Downloads folder. Keep this file safe — you'll need it when Viszio Academy launches.`,
+            );
+          }}
+          disabled={!hasAnyProgress()}
+          className="tap mt-3 inline-flex items-center gap-1.5 rounded-lg bg-ghana-600 px-4 py-2 text-sm font-bold text-white hover:bg-ghana-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Download size={14} /> Download my progress (JSON)
+        </button>
+        {!hasAnyProgress() && (
+          <p className="mt-2 text-[11px] text-slate-500">
+            Nothing to export yet — bookmark an article or finish a lesson
+            first.
+          </p>
         )}
       </div>
 

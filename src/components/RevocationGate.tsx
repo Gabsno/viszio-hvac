@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Info, ArrowRight } from 'lucide-react';
+import { Info, ArrowRight, Download } from 'lucide-react';
 import { VERSION_CHECK_INTERVAL, APP_NAME } from '../config';
 import { fetchDeployedVersion, isRevoked, lockdown } from '../lib/version';
+import { downloadExport, hasAnyProgress } from '../lib/exportData';
 
 interface RevokedInfo {
   message: string;
@@ -43,6 +44,7 @@ export function RevocationGate({ children }: { children: ReactNode }) {
 
 function RetiredScreen({ info }: { info: RevokedInfo }) {
   const url = info.newUrl.trim();
+  const canExport = hasAnyProgress();
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-5">
       <div className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-2xl dark:bg-slate-900">
@@ -54,14 +56,28 @@ function RetiredScreen({ info }: { info: RevokedInfo }) {
         </h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           {info.message.trim() ||
-            'This version of the app is no longer available. Please contact the Viszio HVAC team.'}
+            'This version of the app has retired. Viszio HVAC is becoming part of Viszio Academy — a mobile app on the Play Store and App Store.'}
         </p>
+        {canExport && (
+          <div className="mt-4 rounded-lg border border-ghana-300 bg-ghana-50 p-3 dark:border-ghana-700 dark:bg-ghana-950/40">
+            <p className="text-xs font-semibold text-ghana-800 dark:text-ghana-200">
+              You still have local progress on this device. Download it
+              before closing this tab — Viszio Academy can import it.
+            </p>
+            <button
+              onClick={() => downloadExport()}
+              className="tap mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-ghana-600 px-4 py-2 text-xs font-bold text-white hover:bg-ghana-700"
+            >
+              <Download size={13} /> Download my progress
+            </button>
+          </div>
+        )}
         {url && (
           <a
             href={url}
-            className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-800"
+            className="tap mt-4 inline-flex items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-teal-800"
           >
-            Open the new app <ArrowRight size={15} />
+            Open Viszio Academy <ArrowRight size={15} />
           </a>
         )}
       </div>

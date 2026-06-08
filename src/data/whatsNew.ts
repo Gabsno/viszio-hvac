@@ -11,15 +11,14 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-05-28-illustrations-v3',
-    date: 'May 2026',
-    title: 'Custom AI-generated illustrations',
+    id: '2026-06-08-academy-export',
+    date: 'June 2026',
+    title: 'Viszio HVAC is becoming Viszio Academy — export your progress',
     items: [
-      'New AI-generated hero illustration on Home — isometric mechanical room with a chiller, air handling unit and ductwork, on a faint blueprint grid. Brand-coherent teal and warm orange palette, much richer than the placeholder SVG.',
-      'Empty-state graphic on the Bookmarks panel in Profile — a teal bookmark ribbon with floating engineering symbols (gauge, duct, droplet). The blank screen finally invites action.',
-      'Course completion banner on the Certificate page now shows a gold engineering medal with confetti — a real celebration moment when you hit 100%.',
-      'All illustrations generated via Gemini Nano Banana with the engineering aesthetic, then baked into the app — they ship offline with the PWA.',
-      'Snake-path nodes, bottom-nav active pill, ambient gradient background and all the other polish from yesterday are still in place.',
+      'Viszio HVAC is moving into a new MEPF mobile app called Viszio Academy that covers Mechanical, Electrical, Plumbing and Fire in one place. It will be on the Play Store and the App Store.',
+      'Head to Profile → "Move to Viszio Academy" and tap Download my progress. You\'ll get a small JSON file with your XP, streaks, bookmarks, notes, completed lessons and trophies. Keep it somewhere safe.',
+      'When Viszio Academy launches, you\'ll tap "Import from Viszio HVAC" on first sign-in, pick that file, and everything is restored.',
+      'The current Viszio HVAC web app stays live until the new app is in the stores. No action required today — just don\'t lose the export file when the time comes.',
     ],
   },
 ];

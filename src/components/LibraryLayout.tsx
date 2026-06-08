@@ -3,6 +3,7 @@ import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { BottomNav } from './BottomNav';
 import { PageTransition } from './PageTransition';
+import { DeprecationBanner } from './DeprecationBanner';
 import { useUIStore } from '../store/useUIStore';
 
 /** Library mode shell: top bar + collapsible topic-tree sidebar. */
@@ -12,6 +13,7 @@ export function LibraryLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <DeprecationBanner />
       <TopBar showMenu />
 
       <div className="flex flex-1">

@@ -56,6 +56,21 @@ export const SUPPORT_EMAIL = 'visziogh@gmail.com';
 // working — only the visual entry points are removed.
 export const TOOLS_ENABLED = false;
 
+// --- Deprecation notice ---------------------------------------------------
+// While true, a dismissable banner sits at the top of every screen telling
+// users Viszio HVAC is moving to Viszio Academy and pointing them at the
+// export button on the Profile page. The banner only signals — it never
+// blocks access. Flip to false (or update the message / target date) when
+// the migration timeline is firm.
+export const DEPRECATION = {
+  enabled: true,
+  message:
+    'Viszio HVAC is moving into a new MEPF mobile app — Viszio Academy. Export your progress now so you can carry it over.',
+  exportUrl: '/profile',
+  // Optional: a link to Viszio Academy when it goes live. Empty hides the button.
+  newAppUrl: '',
+};
+
 // GitHub Pages base — also used to fetch version.json at runtime.
 export const BASE_URL = import.meta.env.BASE_URL;
 
