@@ -11,14 +11,15 @@ export interface WhatsNewEntry {
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
-    id: '2026-06-08-academy-export',
+    id: '2026-06-08-academy-export-7day',
     date: 'June 2026',
-    title: 'Viszio HVAC is becoming Viszio Academy — export your progress',
+    title: 'Viszio HVAC retires on 15 June — export your progress now',
     items: [
-      'Viszio HVAC is moving into a new MEPF mobile app called Viszio Academy that covers Mechanical, Electrical, Plumbing and Fire in one place. It will be on the Play Store and the App Store.',
-      'Head to Profile → "Move to Viszio Academy" and tap Download my progress. You\'ll get a small JSON file with your XP, streaks, bookmarks, notes, completed lessons and trophies. Keep it somewhere safe.',
+      'Viszio HVAC is moving into a new MEPF mobile app called Viszio Academy — Mechanical, Electrical, Plumbing and Fire in one place. It will be on the Play Store and the App Store.',
+      'The current web app retires on 15 June 2026 at 23:59 UTC. After that the URL shows a retirement screen — but you can still download your data one last time from it.',
+      'To carry your progress over: go to Profile → "Move to Viszio Academy" and tap Download my progress. You\'ll get a small JSON file with your XP, streaks, bookmarks, notes, completed lessons and trophies. Keep it safe.',
       'When Viszio Academy launches, you\'ll tap "Import from Viszio HVAC" on first sign-in, pick that file, and everything is restored.',
-      'The current Viszio HVAC web app stays live until the new app is in the stores. No action required today — just don\'t lose the export file when the time comes.',
+      'A countdown banner at the top of every screen will get more urgent as the date approaches — please don\'t leave the export until the last hour.',
     ],
   },
 ];

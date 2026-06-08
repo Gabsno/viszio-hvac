@@ -57,16 +57,18 @@ export const SUPPORT_EMAIL = 'visziogh@gmail.com';
 export const TOOLS_ENABLED = false;
 
 // --- Deprecation notice ---------------------------------------------------
-// While true, a dismissable banner sits at the top of every screen telling
-// users Viszio HVAC is moving to Viszio Academy and pointing them at the
-// export button on the Profile page. The banner only signals — it never
-// blocks access. Flip to false (or update the message / target date) when
-// the migration timeline is firm.
+// While true, a banner sits at the top of every screen telling users
+// Viszio HVAC is moving to Viszio Academy and points them at the export
+// button on the Profile page. As REVOCATION_DATE approaches the banner
+// ramps urgency (calm → urgent → critical → already-retired).
 export const DEPRECATION = {
   enabled: true,
   message:
     'Viszio HVAC is moving into a new MEPF mobile app — Viszio Academy. Export your progress now so you can carry it over.',
   exportUrl: '/profile',
+  // ISO timestamp at which the app will be revoked. After this, the
+  // status flip is performed automatically by .github/workflows/auto-revoke.yml.
+  revocationDate: '2026-06-15T23:59:00Z',
   // Optional: a link to Viszio Academy when it goes live. Empty hides the button.
   newAppUrl: '',
 };

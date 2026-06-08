@@ -1,0 +1,72 @@
+name: Auto-revoke Viszio HVAC
+
+# Flips public/version.json to status: "revoked" on the planned
+# retirement date. Existing testers' offline copies poll version.json
+# every 60s; the moment this commit deploys, every running browser
+# shows the retired screen with one last "download my progress" button.
+#
+# Runs daily at 00:05 UTC. The script only writes if it's strictly past
+# the retirement date AND status is still "active" — every other day it
+# is a no-op, so it is safe to leave enabled long after the flip.
+
+on:
+  schedule:
+    # Daily at 00:05 UTC — runs the morning after retirement-day UTC.
+    - cron: '5 0 * * *'
+  # Allow a manual fire-now from the Actions tab for testing.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  revoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Decide whether to revoke
+        id: decide
+        run: |
+          set -euo pipefail
+          STATUS=$(jq -r '.status' public/version.json)
+          NOW=$(date -u +%s)
+          # Read the planned date from src/config.ts (single source of truth).
+          PLANNED=$(grep -oE "revocationDate: '[^']+'" src/config.ts | head -1 | sed -E "s/revocationDate: '([^']+)'/\\1/")
+          if [ -z "$PLANNED" ]; then
+            echo "Could not find revocationDate in src/config.ts"
+            echo "should_revoke=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          PLANNED_EPOCH=$(date -u -d "$PLANNED" +%s)
+          echo "now=$NOW planned=$PLANNED_EPOCH status=$STATUS"
+          if [ "$STATUS" = "active" ] && [ "$NOW" -ge "$PLANNED_EPOCH" ]; then
+            echo "should_revoke=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_revoke=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Flip version.json to revoked
+        if: steps.decide.outputs.should_revoke == 'true'
+        run: |
+          set -euo pipefail
+          MSG="Viszio HVAC has retired. It is moving into a new MEPF mobile app called Viszio Academy, available on the Play Store and the App Store. If you have a downloaded export from Profile, you can import it into Viszio Academy on first sign-in."
+          # wipe stays false — keep the last-chance export button working
+          # on the retired screen for users who only see the app at retirement.
+          tmp=$(mktemp)
+          jq --arg msg "$MSG" \
+             '.status = "revoked" | .message = $msg | .wipe = false' \
+             public/version.json > "$tmp"
+          mv "$tmp" public/version.json
+          echo "After:"
+          cat public/version.json
+
+      - name: Commit and push
+        if: steps.decide.outputs.should_revoke == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name  "viszio-auto-revoke"
+          git config user.email "auto-revoke@users.noreply.github.com"
+          git add public/version.json
+          git commit -m "Auto-revoke: retirement date reached"
+          git push
