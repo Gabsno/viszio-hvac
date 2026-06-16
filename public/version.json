@@ -2,8 +2,8 @@
   "version": "1.0.0",
   "buildHash": "8ec48fee6d39",
   "builtAt": "2026-06-08T23:43:29.670Z",
-  "status": "active",
-  "message": "",
+  "status": "revoked",
+  "message": "Viszio HVAC has retired. It is moving into a new MEPF mobile app called Viszio Academy, available on the Play Store and the App Store. If you have a downloaded export from Profile, you can import it into Viszio Academy on first sign-in.",
   "newUrl": "",
   "wipe": false
 }
